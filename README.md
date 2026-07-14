@@ -1,0 +1,2 @@
+# ShopSphere
+das Abschlussprojekt
