@@ -86,3 +86,90 @@ SELECT
 FROM marketing
 GROUP BY channel
 ORDER BY roi DESC;
+
+
+-- Pareto
+WITH customer_spend AS (
+    SELECT
+        c.customer_id,
+        COALESCE(SUM(o.net_amount), 0) AS total_spend
+
+    FROM customers AS c
+
+    LEFT JOIN orders AS o
+        ON c.customer_id = o.customer_id
+
+    GROUP BY
+        c.customer_id
+),
+
+ranked_customers AS (
+    SELECT
+        customer_id,
+        total_spend,
+
+        ROW_NUMBER() OVER (
+            ORDER BY total_spend DESC
+        ) AS customer_rank,
+
+        COUNT(*) OVER () AS customer_count,
+
+        SUM(total_spend) OVER (
+            ORDER BY total_spend DESC
+            ROWS BETWEEN UNBOUNDED PRECEDING
+                     AND CURRENT ROW
+        ) AS cumulative_revenue,
+
+        SUM(total_spend) OVER () AS total_revenue
+
+    FROM customer_spend
+)
+
+SELECT
+    customer_id,
+    ROUND(total_spend, 2) AS total_spend,
+    customer_rank,
+
+    ROUND(
+        100.0 * customer_rank / customer_count,
+        2
+    ) AS cumulative_customer_pct,
+
+    ROUND(
+        100.0 * cumulative_revenue
+        / NULLIF(total_revenue, 0),
+        2
+    ) AS cumulative_revenue_pct,
+
+    CASE
+        WHEN customer_rank <= (customer_count + 19) / 20
+            THEN 'Top 5%'
+        ELSE 'Other 95%'
+    END AS customer_group
+
+FROM ranked_customers
+
+ORDER BY
+    customer_rank;
+
+
+-- Питання 10. Порівняйте середній чек (net_amount) між групами A і B на всіх замовленнях експерименту. На перший погляд, чи краща версія B?
+SELECT
+    o.ab_variant,
+    CASE 
+        WHEN (julianday(o.order_date) - julianday(c.signup_date)) <= 60 THEN 'Neukunden'
+        ELSE 'Bestandskunden'
+    END AS client_type,
+    ROUND(AVG(o.net_amount), 2) AS avg_net_amount,
+    COUNT(o.order_id) AS total_orders
+FROM orders o
+JOIN customers c ON o.customer_id = c.customer_id
+WHERE o.order_date >= '2024-06-01'
+  AND o.ab_variant IN ('A', 'B')
+GROUP BY 
+    o.ab_variant,
+    CASE 
+        WHEN (julianday(o.order_date) - julianday(c.signup_date)) <= 60 THEN 'Neukunden'
+        ELSE 'Bestandskunden'
+    END
+ORDER BY client_type, o.ab_variant;
