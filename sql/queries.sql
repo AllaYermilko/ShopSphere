@@ -1,4 +1,7 @@
--- 1.1. Порахуйте загальну чисту виручку (net_amount), кількість замовлень і середній чек по кожному РЕГІОНУ за кожен РІК. Потрібен JOIN orders з customers.
+-- 1.1. Berechnen Sie den gesamten Nettoumsatz (net_amount), die Anzahl der Bestellungen und den
+-- durchschnittlichen Bestellwert für jede REGION und jedes JAHR. Erforderlich ist ein JOIN von orders
+-- mit customers.
+
 SELECT
     c.region,
     o.order_year,
@@ -11,7 +14,9 @@ GROUP BY c.region, o.order_year
 ORDER BY o.order_year, total_net_revenue DESC;
 
 
--- 1.2. Знайдіть топ-10 клієнтів за загальною сумою витрат. Виведіть їхній регіон, канал залучення і скільки замовлень вони зробили.
+-- 1.2. Finden Sie die Top-10-Kunden nach Gesamtausgaben. Geben Sie deren Region,
+-- Akquisitionskanal und die Anzahl der getätigten Bestellungen an.
+
 SELECT
     c.customer_id,
     c.region,
@@ -28,7 +33,10 @@ ORDER BY total_spent DESC
 LIMIT 10;
 
 
--- 1.3. Для кожної категорії товарів порахуйте: загальну виручку, середню маржу (margin_pct) і частку повернень. Потрібно об'єднати order_items, products та orders.
+-- 1.3. Berechnen Sie für jede Produktkategorie: den Gesamtumsatz, die durchschnittliche Marge
+-- (margin_pct) und den Retourenanteil. Dafür müssen order_items, products und orders
+-- zusammengeführt werden.
+
 SELECT
     p.category,
     ROUND(SUM(oi.line_total), 2) AS total_revenue,
@@ -42,7 +50,10 @@ GROUP BY p.category
 ORDER BY total_revenue DESC;
 
 
--- 1.4. За допомогою підзапиту знайдіть клієнтів, чия загальна сума витрат перевищує середню суму витрат по всій базі. Скільки їх? Яка їхня частка у загальній виручці?
+-- 1.4. Finden Sie mittels Unterabfrage die Kunden, deren Gesamtausgaben den durchschnittlichen
+-- Ausgabenwert über die gesamte Datenbank hinweg übersteigen. Wie viele sind es? Welchen Anteil am
+-- Gesamtumsatz haben sie?
+
 WITH customer_spending AS (
     SELECT
         customer_id,
@@ -77,7 +88,9 @@ SELECT
 FROM above_avg_customers;
 
 
--- 1.5. Порахуйте для кожного маркетингового каналу: сумарний бюджет, сумарну приписану виручку і ROI (виручка / бюджет). Використайте таблицю marketing.
+-- 1.5. Berechnen Sie für jeden Marketingkanal: das Gesamtbudget, den gesamten zugeschriebenen
+-- Umsatz und den ROI (Umsatz / Budget). Verwenden Sie die Tabelle marketing.
+
 SELECT
     channel,
     ROUND(SUM(budget), 2) AS total_budget,
@@ -153,7 +166,9 @@ ORDER BY
     customer_rank;
 
 
--- Питання 10. Порівняйте середній чек (net_amount) між групами A і B на всіх замовленнях експерименту. На перший погляд, чи краща версія B?
+-- 5.10. Vergleichen Sie den durchschnittlichen Bestellwert (net_amount) zwischen den Gruppen A und B über
+-- alle Bestellungen des Experiments hinweg. Ist Version B auf den ersten Blick besser?
+    
 SELECT
     o.ab_variant,
     CASE 
