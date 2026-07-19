@@ -188,3 +188,21 @@ GROUP BY
         ELSE 'Bestandskunden'
     END
 ORDER BY client_type, o.ab_variant;
+
+-- LTV
+
+SELECT
+   c.acquisition_chan,
+   AVG(customer_ltv) AS avg_ltv
+FROM
+(
+   SELECT
+       customer_id,
+       SUM(net_amount) AS customer_ltv
+   FROM orders
+   GROUP BY customer_id
+) ltv
+JOIN customers c
+ON ltv.customer_id = c.customer_id
+GROUP BY c.acquisition_chan
+ORDER BY avg_ltv DESC;
