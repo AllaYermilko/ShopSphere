@@ -101,7 +101,9 @@ GROUP BY channel
 ORDER BY roi DESC;
 
 
--- Pareto
+-- 2.5. Kundenbeitrag (Pareto). Visualisieren Sie, welchen Umsatzanteil die Top-Kunden erwirtschaften.
+
+Tipp: kumulatives Diagramm oder einfacher Vergleich „Top 5 % vs. Rest“.
 WITH customer_spend AS (
     SELECT
         c.customer_id,
@@ -165,6 +167,89 @@ FROM ranked_customers
 ORDER BY
     customer_rank;
 
+-- 2.6. (Kreativ). Wählen Sie einen noch nicht untersuchten Datenausschnitt und erstellen Sie 
+-- eine Visualisierung nach eigenem Ermessen. Überraschen Sie uns mit einem Insight.
+
+Visualisierung nach eigenem Ermessen. Überraschen Sie uns mit einem Insight.  
+
+WITH customer_metrics AS (
+    SELECT
+        c.customer_id,
+        c.region,
+        c.acquisition_chan,
+
+        COUNT(DISTINCT o.order_id) AS orders_count,
+
+        ROUND(
+            AVG(o.discount_pct),
+            2
+        ) AS avg_discount_pct,
+
+        ROUND(
+            SUM(o.net_amount),
+            2
+        ) AS customer_ltv
+
+    FROM customers AS c
+
+    LEFT JOIN orders AS o
+        ON c.customer_id = o.customer_id
+
+    GROUP BY
+        c.customer_id,
+        c.region,
+        c.acquisition_chan
+),
+
+customer_segments AS (
+    SELECT
+        customer_id,
+        region,
+        acquisition_chan,
+        orders_count,
+        avg_discount_pct,
+        customer_ltv,
+
+        CASE
+            WHEN avg_discount_pct > 20
+                THEN 'Discount-heavy customers (>20%)'
+            ELSE 'Other customers'
+        END AS customer_segment
+
+    FROM customer_metrics
+)
+
+SELECT
+    customer_segment,
+
+    COUNT(*) AS customers,
+
+    ROUND(
+        AVG(orders_count),
+        2
+    ) AS avg_orders_per_customer,
+
+    ROUND(
+        AVG(customer_ltv),
+        2
+    ) AS avg_ltv,
+
+    ROUND(
+        SUM(customer_ltv),
+        2
+    ) AS total_revenue,
+
+    ROUND(
+        AVG(avg_discount_pct),
+        2
+    ) AS avg_discount_pct
+
+FROM customer_segments
+
+GROUP BY customer_segment
+
+ORDER BY total_revenue DESC;
+
 
 -- 5.10. Vergleichen Sie den durchschnittlichen Bestellwert (net_amount) zwischen den Gruppen A und B über
 -- alle Bestellungen des Experiments hinweg. Ist Version B auf den ersten Blick besser?
@@ -189,7 +274,9 @@ GROUP BY
     END
 ORDER BY client_type, o.ab_variant;
 
--- LTV
+-- Frage 4. Vergleichen Sie die Kanäle nicht nur nach dem Kampagnen-ROI, sondern auch nach dem langfristigen
+-- Kundenwert (LTV): Berechnen Sie die durchschnittlichen Kundenausgaben in Abhängigkeit vom
+-- acquisition_channel. Stimmen die Schlussfolgerungen mit dem Kampagnen-ROI überein?
 
 SELECT
    c.acquisition_chan,
@@ -206,3 +293,69 @@ JOIN customers c
 ON ltv.customer_id = c.customer_id
 GROUP BY c.acquisition_chan
 ORDER BY avg_ltv DESC;
+
+--Frage 8.
+-- Vergleichen Sie Kunden, die überwiegend mit Rabatt kaufen (durchschnittlicher Rabatt > 20 %), mit
+-- den übrigen Kunden hinsichtlich der Bestellanzahl. „Binden“ sich Kunden, die wegen Rabatten
+-- gekommen sind, oder kaufen sie einmal und verschwinden?
+
+WITH CustomerStats AS (
+    SELECT 
+        customer_id,
+        COUNT(order_id) AS total_orders_per_user,
+        AVG(discount_pct) AS avg_customer_discount
+    FROM orders
+    GROUP BY customer_id
+),
+SegmentedCustomers AS (
+    SELECT 
+        customer_id,
+        total_orders_per_user,
+        CASE 
+            WHEN avg_customer_discount > 20 THEN 'Rabattorientiert (>20%)'
+            ELSE 'Übrige Kunden (≤20%)'
+        END AS discount_segment
+    FROM CustomerStats
+)
+SELECT 
+    discount_segment AS Rabattsegment_Typ,
+    AVG(total_orders_per_user) AS Bestellfrequenz_pro_Kunde
+FROM SegmentedCustomers
+GROUP BY discount_segment;
+
+-- Frage 9.
+-- Berechnen Sie, welchen Umsatzanteil die Top-5-%-Kunden erwirtschaften. Wer sind diese Personen
+-- (Region, Akquisitionskanal)? Wie kann das Unternehmen sie halten?
+
+WITH CustomerLTV AS (
+    SELECT 
+        c.customer_id,
+        c.acquisition_chan,
+        c.region,
+        SUM(o.net_amount) AS total_customer_ltv
+    FROM customers c
+    JOIN orders o ON c.customer_id = o.customer_id
+    GROUP BY c.customer_id, c.acquisition_chan, c.region
+),
+RankedCustomers AS (
+    SELECT 
+        *,
+        ROW_NUMBER() OVER (ORDER BY total_customer_ltv DESC) AS customer_rank
+    FROM CustomerLTV
+),
+TotalCount AS (
+    SELECT COUNT(*) AS total_customers FROM CustomerLTV
+),
+Top5PercentKunden AS (
+    SELECT r.*
+    FROM RankedCustomers r
+    CROSS JOIN TotalCount t
+    WHERE r.customer_rank <= (t.total_customers * 0.05)
+)
+SELECT 
+    acquisition_chan AS Kanal,
+    region AS Region,
+    COUNT(customer_id) AS Anzahl_Top_Kunden,   
+    SUM(total_customer_ltv) AS Umsatz_Top_Kunden 
+FROM Top5PercentKunden
+GROUP BY acquisition_chan, region;
