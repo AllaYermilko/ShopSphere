@@ -133,3 +133,76 @@ Das Dashboard ist logisch aufgebaut – vom allgemeinen Zustand des Geschäfts b
 1. Das Geschäft wächst schnell, aber die Rückgabequote liegt bereits bei 9,77 %. Das Wachstum muss daher immer zusammen mit der Qualität der Erträge bewertet werden.
 2. *Southeast Asia* ist der wichtigste neue Wachstumstreiber, während *North America* der größte Markt bleibt. Die Strategie sollte den Schutz des bestehenden Volumens mit einer gezielten Expansion verbinden.
 3. Die größte Produktkategorie ist nicht die profitabelste, und die Top 5 % der Kunden bringen 35,07 % des Umsatzes. Entscheidungen über das Sortiment und die Kundenbindung haben eine höhere Priorität als eine einfache Umsatzsteigerung.
+   
+
+## Block 4. Strategische Business-Cases
+
+### Frage 3: Welcher Kanal bringt das meiste Geld pro investiertem Dollar?
+
+Der Kanal *Organic* hat mit 8,02 den höchsten ROAS. Das bedeutet 8,02 USD Umsatz pro 1 USD Marketingkosten. Auf dem zweiten Platz liegt *Email* mit einem ROAS von 6,50. Den niedrigsten Wert hat *Paid Search* mit 1,33. Gleichzeitig erhält *Paid Search* mit 450.959 USD rund 45,95 % des gesamten Budgets.
+
+Das bedeutet: Der größte Teil des Budgets fließt in den Kanal mit der geringsten relativen Effizienz. Allerdings generiert *Paid Search* mit 598.703 USD den höchsten absoluten Umsatz. Daher sollte man diesen Kanal nicht einfach als „schlecht“ bewerten. Es ist wichtig, seine Grenzeffizienz und die tatsächliche Rentabilität nach Abzug der Produktmarge zu prüfen.
+
+### Frage 4: Stimmen die ROAS-Ergebnisse mit dem langfristigen Kundenwert (LTV) überein?
+
+Die Rankings stimmen nicht überein. *Organic* und *Email* sind führend beim ROAS, aber *Influencer* und *Referral* haben den höchsten durchschnittlichen LTV – 1.985,73 USD und 1.791,82 USD. *Organic* hat einen LTV von 1.316,13 USD, *Email* von 1.074,46 USD, *Social Ads* von 822,09 USD und *Paid Search* von 648,10 USD.
+
+*Organic* bietet die beste Balance zwischen kurzfristiger Effizienz und langfristigem Wert. *Influencer* und *Referral* bringen wertvollere Kunden, obwohl ihr ROAS niedriger ist. *Paid Search* schneidet bei beiden relativen Kennzahlen am schlechtesten ab.
+
+### Frage 5: Wie soll das Budget neu verteilt werden? Welche Risiken hat diese Empfehlung?
+
+Der empfohlene erste Schritt ist ein kontrollierter Pilot-Test. Dabei werden 15–20 % des *Paid Search*-Budgets (ca. 67,6–90,2 Tsd. USD) abgezogen. Dieses Geld soll in mehreren Testwellen auf *Email*, *Influencer*, *Referral* und *Organic* verteilt werden.
+
+1. **Organic und Email:** Das Budget schrittweise erhöhen und prüfen, ob der ROAS bei Skalierung hoch bleibt.
+2. **Influencer und Referral:** In die Qualität der Partner und in Empfehlungsmechanismen investieren, da diese Kanäle Kunden mit dem höchsten LTV bringen.
+3. **Paid Search:** Nicht den gesamten Kanal abschalten, sondern nur schwache Kampagnen, Keywords, Zielgruppen und Regionen reduzieren.
+4. **Kontrolle:** Neben dem ROAS auch den inkrementellen Umsatz, CPA, die Wiederkaufsrate, Rückgaben und den Bruttogewinn bewerten.
+
+*   **Sättigungsrisiko:** Effiziente Kanäle können ihren hohen ROAS verlieren, wenn das Budget zu schnell steigt.
+*   **Attributionsrisiko:** Der zugeschriebene Umsatz spiegelt möglicherweise nicht den realen inkrementellen Beitrag des Kanals wider.
+*   **Kohorten-Altersrisiko:** Kunden aus verschiedenen Kanälen hatten möglicherweise unterschiedlich viel Zeit, um ihren LTV aufzubauen.
+*   **Kapazitätsrisiko:** *Influencer* und *Referral* haben möglicherweise ein begrenztes Skalierungspotenzial.
+
+### Case B: Welche Kategorien schaffen wirklich Wert?
+
+#### Frage 6: Welche Kategorie erzeugt die „Illusion von Volumen“?
+
+*Electronics* erzielt mit 2.097.901,06 USD den größten Umsatz, hat aber nur eine Produktmarge von 12 % und die höchste Rückgabequote von rund 15,97 %. Diese Kategorie ist wichtig für die Skalierung, aber ein hoher Umsatz bedeutet nicht automatisch einen hohen Gewinn.
+
+Die richtige Entscheidung ist es, *Electronics* nicht automatisch zu reduzieren, sondern eine Analyse auf SKU-Ebene (Produktebene) durchzuführen. Wir müssen Produkte mit niedriger Marge, hoher Rückgabequote und großen Logistikkosten identifizieren. Für eine Management-Entscheidung wird die Kennzahl des Bruttogewinns nach Rückgaben benötigt.
+
+#### Frage 7: Gibt es einen „versteckten Diamanten“ unter den Kategorien?
+
+*Beauty* ist der offensichtlichste „versteckte Diamant“. Die Kategorie hat einen Umsatz von 168.624,42 USD, die höchste Produktmarge von 55 % und eine geringere Rückgabequote von rund 9,97 %. *Toys* hat ebenfalls eine gute Kombination aus Marge und Rückgaben, aber ein geringeres Verkaufsvolumen.
+
+Die Kategorie *Beauty* sollte durch ein kontrolliertes Experiment skaliert werden: Das Sortiment erweitern, separate Kampagnen starten, Cross-Selling testen und den Bruttogewinn, die Rückgaben sowie die Kannibalisierung anderer Kategorien überwachen. Das Ziel ist es, das Volumen zu erhöhen, ohne die Wirtschaftlichkeit der Kategorie zu verschlechtern.
+
+### Case C: Rabatte und wertvolle Kunden
+
+#### Frage 8: Bilden hohe Rabatte eine langfristige Kundenloyalität?
+
+Im Diagramm zeigen sich 11.691 Bestellungen von Stammkunden (regulären Kunden) und 583 Bestellungen von rabattorientierten Kunden. Da die absoluten Zahlen jedoch teilweise von der unterschiedlichen Größe der Segmente abhängen, sollte die durchschnittliche Kaufhäufigkeit pro Kunde die Hauptkennzahl sein.
+
+Bei den normalisierten Daten tätigen Kunden mit einem durchschnittlichen Rabatt von über 20 % nur 2,17 Bestellungen, verglichen mit 4,35 Bestellungen bei den restlichen Kunden. Ihr durchschnittlicher LTV ist ebenfalls deutlich niedriger. Die verfügbaren Daten bestätigen also nicht, dass tiefe Rabatte eine langfristige Loyalität aufbauen.
+
+Dieses Ergebnis beweist keine Kausalität. Für eine genauere Bewertung müssen das Registrierungsdatum, die Kategorie, die Region, der Akquisitionskanal und der Beobachtungszeitraum kontrolliert werden.
+
+### Case C: Rabatte und wertvolle Kunden
+
+#### Frage 8: Bilden hohe Rabatte eine langfristige Kundenloyalität?
+
+Im Diagramm zeigen sich 11.691 Bestellungen von Stammkunden (regulären Kunden) und 583 Bestellungen von rabattorientierten Kunden. Da die absoluten Zahlen jedoch teilweise von der unterschiedlichen Größe der Segmente abhängen, sollte die durchschnittliche Kaufhäufigkeit pro Kunde die Hauptkennzahl sein.
+
+Bei den normalisierten Daten tätigen Kunden mit einem durchschnittlichen Rabatt von über 20 % nur 2,17 Bestellungen, verglichen mit 4,35 Bestellungen bei den restlichen Kunden. Ihr durchschnittlicher LTV ist ebenfalls deutlich niedriger. Die verfügbaren Daten bestätigen also nicht, dass tiefe Rabatte eine langfristige Loyalität aufbauen.
+
+Dieses Ergebnis beweist keine Kausalität. Für eine genauere Bewertung müssen das Registrierungsdatum, die Kategorie, die Region, der Akquisitionskanal und der Beobachtungszeitraum kontrolliert werden.
+
+#### Frage 9: Welchen Anteil am Umsatz bringen die Top-5-%-Kunden? Wer sind diese Personen und wie kann man sie binden?
+
+Die Top-5-%-Kunden generieren 35,07 % des gesamten Nettoumsatzes. Die stärkste Kombination ist *Europe × Influencer*: Hier bringen 12 Kunden rund 125,9 Tsd. USD ein. Weitere starke Gruppen konzentrieren sich auf *Southeast Asia* und *North America* und kommen häufig über die Kanäle *Influencer*, *Organic* und *Referral*.
+
+1. **VIP-Service:** Priorisierter Support, früher Zugang zu neuen Produkten und persönliche Empfehlungen.
+2. **Churn-Monitoring:** Automatisches Signal im CRM-System, wenn ein Kunde sein typisches Kaufintervall überschreitet.
+3. **Personalisierung:** Angebote auf Basis der Kategorie-Historie und der tatsächlichen Produktmarge statt universeller Rabatte.
+4. **Feedback-Schleifen:** Separate Analyse der Rückgabegründe und der Kundenzufriedenheit unter den Top-Kunden.
+5. **Kostenkontrolle der Privilegien:** Kostenloser Versand, Geschenke und Boni müssen anhand der Deckungsbeitragsmarge (Contribution Margin) bewertet werden.
