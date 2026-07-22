@@ -2,7 +2,7 @@
 # Finalprojekt: ShopSphere: Analyse eines globalen Marktplatzes
 
 ## Angaben zum Autor
-* **Studierende/r:** Alla Yermilko
+* **Studierende:** Alla Yermilko
 * **Präsentationsdatum:** 29.07.2026
 
 ## Projektziel
