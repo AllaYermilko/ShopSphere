@@ -126,6 +126,7 @@ Der ROI wird als Verhältnis des zugerechneten Umsatzes zum Marketingbudget defi
 ## Block 2. Visualisierungen in Tableau
 ### 2.1. Saisonalität: Visualisieren Sie den monatlichen Umsatz. Gibt es saisonale Spitzen und wann erzielt das Unternehmen den höchsten Umsatz?
 
+![Umsatzsaisonalität](Tableau/2.1.Umsatzsaisonalität.png)
 
 Das Liniendiagramm zeigt den monatlichen Nettoumsatz von 2022 bis 2024. Die Gesamtentwicklung ist steigend, jedoch nicht gleichmäßig: Neben dem kontinuierlichen Wachstum treten deutliche Spitzen am Ende jedes Jahres auf. Der höchste Wert des gesamten Zeitraums wurde im Dezember 2024 mit 759.390 USD erreicht.
 Der Dezemberumsatz stieg von 72.908 USD im Jahr 2022 auf 206.421 USD im Jahr 2023 und schließlich auf 759.390 USD im Jahr 2024. Dies belegt sowohl einen saisonalen Effekt als auch eine deutliche Skalierung des Geschäfts. Die Visualisierung zeigt ein beschleunigtes Wachstum und zunehmend starke Dezember-Spitzen; ohne ein separates mathematisches Modell sollte der Verlauf jedoch nicht formal als exponentiell bezeichnet werden.
