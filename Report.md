@@ -185,7 +185,7 @@ Die analytische Lösung besteht aus zwei miteinander verbundenen Seiten: „Gesc
 
 ### Dashboard 1. Geschäftsüberblick
 
-![Dashboard Geschäftsüberblick](Dashboard_Geschäftsüberblick.png)
+![Dashboard Geschäftsüberblick](Tableau/Dashboard_Geschäftsüberblick.png)
 
 Im oberen Bereich befinden sich vier KPI-Karten:
 Nettoumsatz — 3,47 Mio. USD;
@@ -197,7 +197,7 @@ Die Filter `Region` und `Jahr` gelten für die kompatiblen Arbeitsblätter der p
 
 ### Dashboard 2. Marketing & Wachstum
 
-![Dashboard Marketing & Wachstum](Dashboard_Marketing&Wachstum.png)
+![Dashboard Marketing & Wachstum](Tableau/Dashboard_Marketing&Wachstum.png)
 
 Das zweite Dashboard kombiniert drei Diagramme mit einem Textblock strategischer Schlussfolgerungen:
 Streudiagramm „Marketingbudget — ROI“;
@@ -233,7 +233,7 @@ Die derzeitige Ausgabenstruktur ist unausgewogen: Die größten Mittel fließen 
 
 ### 4.4. Vergleichen Sie die Kanäle nach ROI und langfristigem Kundenwert. Stimmen die Ergebnisse überein?
 
-![Langfristiger Kundenwert nach Akquisitionskanal](4.4.LTV_nach_Akquisekanal.png)
+![Langfristiger Kundenwert nach Akquisitionskanal](Tableau/4.4.LTV_nach_Akquisekanal.png)
 
 Die Ergebnisse stimmen nur teilweise überein. Beim LTV führen Influencer mit 1.986 USD und Referral mit 1.792 USD. Es folgen Organic mit 1.316 USD, Email mit 1.074 USD, Social Ads mit 822 USD und Paid Search mit 648 USD.
 Organic und Email erzielen die höchste kurzfristige Budgeteffizienz. Influencer und Referral gewinnen dagegen die langfristig wertvollsten Kunden. Paid Search ist bei beiden Kennzahlen der schwächste Kanal.
@@ -269,7 +269,7 @@ schrittweise Skalierung unter Kontrolle von Marge, Retouren, Wiederkäufen und K
 
 ### 4.8. Binden sich Kundinnen und Kunden, die überwiegend mit mehr als 20 % Rabatt kaufen, langfristig an das Unternehmen?
 
-![Vergleich rabattorientierter Kunden mit der übrigen Kundenbasis](4.8.Kundenbindung&Rabatte.png)
+![Vergleich rabattorientierter Kunden mit der übrigen Kundenbasis](Tableau/4.8.Kundenbindung&Rabatte.png)
 
 Kundinnen und Kunden mit hohen durchschnittlichen Rabatten weisen eine deutlich geringere Loyalität auf. Im rabattorientierten Segment liegt die durchschnittliche Bestellanzahl bei 2,17, der durchschnittliche LTV bei rund 384 USD und der Anteil der Einmalkäufer bei 25,0 %. Bei den übrigen Kunden liegen diese Werte bei 4,35 Bestellungen, 1.261 USD LTV und 16,6 % Einmalkäufern.
 Rabattorientierte Kunden kaufen somit ungefähr halb so häufig, weisen einen rund 70 % niedrigeren LTV auf und bleiben häufiger Einmalkäufer.
@@ -278,7 +278,7 @@ Betriebswirtschaftliche Schlussfolgerung: Flächendeckende Rabatte von mehr als 
 
 ### 4.9. Welchen Umsatzanteil erzielen die Top 5 %, wer sind diese Kunden und wie können sie gebunden werden?
 
-![Umsatz der Top-5-%-Kunden nach Region und Kanal](4.9.Top-5%_Struktur.png)
+![Umsatz der Top-5-%-Kunden nach Region und Kanal](Tableau/4.9.Top-5%_Struktur.png)
 
 Die Top 5 % der Kunden — 150 Personen — generieren 35,07 % des Gesamtumsatzes beziehungsweise rund 1.218.211 USD.
 Die stärksten Kombinationen aus Region und Kanal sind:
@@ -300,7 +300,7 @@ Deskriptiv liegt B um 5,54 USD beziehungsweise rund 2,0 % über A. Auf den erste
 
 ### 5.11. Vergleichen Sie A und B getrennt für neue und wiederkehrende Kunden. Was zeigt die Segmentierung?
 
-![Durchschnittlicher Bestellwert der A/B-Varianten nach Kundentyp](5.10.AB-Test_Checkout.png)
+![Durchschnittlicher Bestellwert der A/B-Varianten nach Kundentyp](Tableau/5.10.AB-Test_Checkout.png)
 
 Die Segmentierung ergibt:
 A, Neukunden: 264 Bestellungen, durchschnittlicher Bestellwert 223,30 USD;
