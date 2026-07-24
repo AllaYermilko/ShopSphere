@@ -278,7 +278,7 @@ Betriebswirtschaftliche Schlussfolgerung: Flächendeckende Rabatte von mehr als 
 
 ### 4.9. Welchen Umsatzanteil erzielen die Top 5 %, wer sind diese Kunden und wie können sie gebunden werden?
 
-![Umsatz der Top-5-%-Kunden nach Region und Kanal](Tableau/4.9.Top-5%_Struktur.png)
+![Top-5%_Struktur](Tableau/4.9.Top-5%_Struktur.png)
 
 Die Top 5 % der Kunden — 150 Personen — generieren 35,07 % des Gesamtumsatzes beziehungsweise rund 1.218.211 USD.
 Die stärksten Kombinationen aus Region und Kanal sind:
