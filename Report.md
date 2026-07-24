@@ -4,205 +4,326 @@
 ## Angaben zum Autor
 * **Studierende:** Alla Yermilko
 * **Präsentationsdatum:** 29.07.2026
+  
+## Einleitung
+ShopSphere ist ein globaler Online-Marktplatz, der Produkte aus sieben Kategorien in fünf Weltregionen vertreibt. Für die Analyse wurden Daten zu 3.000 Kundinnen und Kunden, 250 Produkten, rund 12.300 Bestellungen, etwa 26.000 Bestellpositionen und 216 Marketingkampagnen aus den Jahren 2022–2024 verwendet.
 
 ## Projektziel
-Das Ziel dieses Abschlussprojekts ist es, einen vollständigen Analysezyklus für den globalen Marktplatz ShopSphere durchzuführen. Die Analyse umfasst die Datenaufbereitung in SQL, die Erstellung von Visualisierungen und Dashboards in Tableau, die Formulierung von Geschäftserkenntnissen sowie die Auswertung eines A/B-Tests.
+Ziel des Projekts ist es, die finanzielle Entwicklung des Unternehmens, die Effizienz der Marketingkanäle, die Rentabilität der Produktkategorien, die regionale Entwicklung, den Kundenwert sowie die Ergebnisse eines A/B-Tests des neuen Checkouts zu untersuchen. Die Analyse verbindet SQL, Tableau, betriebswirtschaftliche Interpretation und statistisches Denken.
 
-Das Projekt beantwortet fünf Kernfragen: Wie entwickeln sich die Umsätze? Wie effizient wird das Marketingbudget eingesetzt? Welche Kategorien und Kunden generieren den größten Mehrwert? Wie hängen Rabatte und kostenloser Versand mit dem Kundenverhalten zusammen? Lohnt sich die Einführung eines neuen Checkout-Prozesses?
 
-## Ausgangsdaten
 
-| Tabelle | Granularität | Hauptzweck |
-| :--- | :--- | :--- |
-| **customers** | 1 Zeile = 1 Kunde | Region, Land, Alter, Geschlecht, Akquisitionskanal, Registrierungsdatum |
-| **products** | 1 Zeile = 1 Produkt | Kategorie, Preis, Selbstkosten, Produktmarge |
-| **orders** | 1 Zeile = 1 Bestellung | Datum, Kunde, Gerät, Kanal, Rabatt, Nettobetrag, Versand, A/B-Variante, Rückgabe |
-| **order_items**| 1 Zeile = 1 Bestellposition | Produkt, Kategorie, Menge, Preis und Betrag der Position |
-| **marketing** | 1 Zeile = Kanal × Monat | Budget, Impressionen, Klicks, Conversions und zugeschriebener Umsatz |
+## Block 1. SQL: Datenaufbereitung
+### 1.1. Berechnen Sie den Nettoumsatz, die Anzahl der Bestellungen und den durchschnittlichen Bestellwert nach Region und Jahr
 
-Der Analysezeitraum umfasst die Jahre 2022 bis 2024. Die Haupttabelle **orders** enthält 12.274 Bestellungen. Die Tabelle **customers** umfasst 3.000 Kunden, **products** enthält 250 Produkte, **order_items** zählt rund 26.000 Bestellpositionen und **marketing** beinhaltet 216 aggregierte Datensätze.
+```sql
+SELECT
+    c.region,
+    o.order_year,
+    ROUND(SUM(o.net_amount), 2) AS total_net_revenue,
+    COUNT(o.order_id) AS orders_count,
+    ROUND(AVG(o.net_amount), 2) AS avg_order_value
+FROM orders o
+JOIN customers c ON o.customer_id = c.customer_id
+GROUP BY c.region, o.order_year
+ORDER BY o.order_year, total_net_revenue DESC;
+```
+Die Abfrage verknüpft `orders` und `customers` über den Schlüssel `customer_id` und erstellt anschließend eine Auswertung nach Region und Jahr. Das Ergebnis dient dem Vergleich von Umsatz, Bestellanzahl und durchschnittlichem Bestellwert zwischen den Regionen und Zeiträumen.
 
-## Methodik und Einschränkungen
 
-* **Datenmodell:** Für die Umsatzanalyse wird die logische Verknüpfung *customers → orders → order_items → products* verwendet. Die Tabelle *marketing* wird aufgrund eines anderen Detaillierungsgrades (Granularität) separat analysiert.
-* **Marketing ROI:** Die Kennzahl wird als `attributed_revenue / budget` berechnet. Sie spiegelt den Werbeumsatz pro eingesetztem Euro (oder Dollar) wider, berücksichtigt jedoch nicht die vollständigen Selbstkosten und stellt somit keinen Netto-ROI dar.
-* **LTV (Lifetime Value):** In diesem Projekt wird der tatsächlich beobachtete, kumulierte Umsatz eines Kunden im verfügbaren Zeitraum herangezogen und nicht der prognostizierte Lifetime Value.
-* **Kausalität:** Der Vergleich von Rabatten und kostenlosem Versand zeigt Korrelationen in den Daten auf, beweist jedoch keine kausalen Effekte.
-* **A/B-Test:** Es liegen Daten zu den Bestellungen vor, jedoch fehlen die Daten zu allen Checkout-Sitzungen (Sessions). Daher kann der durchschnittliche Bestellwert (Warenkorb) der Käufer ermittelt werden, nicht aber die vollständige Conversion-Rate zum Kauf.
+### 1.2. Ermitteln Sie die zehn umsatzstärksten Kundinnen und Kunden
 
-### 1.1. Gesamtnettoumsatz, Anzahl der Bestellungen und durchschnittlicher Bestellwert nach Region und Jahr
+```sql
+SELECT
+    c.customer_id,
+    c.region,
+    c.acquisition_chan,
+    COUNT(o.order_id) AS orders_count,
+    ROUND(SUM(o.net_amount), 2) AS total_spent
+FROM customers c
+JOIN orders o ON c.customer_id = o.customer_id
+GROUP BY 
+    c.customer_id,
+    c.region,
+    c.acquisition_chan
+ORDER BY total_spent DESC
+LIMIT 10;
+```
+Die Abfrage ordnet die Kundinnen und Kunden nach ihren kumulierten Nettoausgaben und ergänzt Region, Akquisitionskanal und Bestellanzahl. Dadurch lässt sich das Profil der wertvollsten Kundengruppe bestimmen.
 
-* **Ziel:** Vergleich von Umfang und Dynamik der Umsätze in fünf Regionen über den Zeitraum 2022–2024.
-* **Ergebnis:** Diese Abfrage bildet die Grundlage für das regionale Diagramm und ermöglicht die gleichzeitige Analyse von Umsatz, Bestellvolumen und durchschnittlichem Bestellwert.
 
-### 1.2. Top-10-Kunden nach Gesamtausgaben
+### 1.3. Berechnen Sie für jede Kategorie Umsatz, durchschnittliche Marge und Retourenquote
 
-* **Ziel:** Identifikation der wertvollsten Kunden, ihrer Region, ihres Akquisitionskanals und der Anzahl ihrer Bestellungen.
-* **Ergebnis:** Diese Abfrage bildet die Basis für eine personalisierte Analyse der VIP-Kunden und für die zukünftige Entwicklung von Kundenbindungsprogrammen.
+```sql
+SELECT
+    p.category,
+    ROUND(SUM(oi.line_total), 2) AS total_revenue,
+    ROUND(AVG(p.margin_pct), 2) AS avg_margin_pct,
+    ROUND(100.0 * SUM(o.is_returned) / COUNT(DISTINCT o.order_id), 2) AS return_rate_pct
+FROM order_items oi
+JOIN products p 
+    ON oi.product_id = p.product_id
+JOIN orders o ON oi.order_id = o.order_id
+GROUP BY p.category
+ORDER BY total_revenue DESC;
+```
+Die separate Bildung eindeutiger Paare aus Kategorie und Bestellung verhindert, dass eine Retoure mehrfach gezählt wird, wenn eine Bestellung mehrere Positionen derselben Kategorie enthält.
 
-### 1.3. Umsatz, durchschnittliche Marge und Rückgabequote nach Kategorien
 
-* **Ziel:** Vergleich der Produktkategorien nicht nur nach Umsatzvolumen, sondern auch nach der Qualität der Erträge.
-* **Ergebnis:** Retonierte Bestellungen werden mittels `COUNT(DISTINCT CASE...)` berechnet. Dadurch wird verhindert, dass eine einzelne Bestellung aufgrund mehrerer Bestellpositionen mehrfach gezählt wird.
+### 1.4. Ermitteln Sie Kundinnen und Kunden mit überdurchschnittlichen Ausgaben und deren Umsatzanteil
+```sql
+WITH customer_spending AS (
+    SELECT
+        customer_id,
+        SUM(net_amount) AS total_spent
+    FROM orders
+    GROUP BY customer_id
+),
 
-### 1.4. Kunden mit überdurchschnittlichen Gesamtausgaben
+avg_spending AS (
+    SELECT
+        AVG(total_spent) AS avg_total_spent
+    FROM customer_spending
+),
 
-* **Ziel:** Ermittlung der Anzahl der Kunden mit überdurchschnittlichen Ausgaben sowie ihres Anteils am Gesamtumsatz.
-* **Ergebnis:** Diese Abfrage bewertet die Umsatzkonzentration auf Kundenebene und ergänzt die Pareto-Analyse.
+above_avg_customers AS (
+    SELECT
+        cs.customer_id,
+        cs.total_spent
+    FROM customer_spending cs
+    CROSS JOIN avg_spending av
+    WHERE cs.total_spent > av.avg_total_spent
+)
 
-### 1.5. Marketingbudget, zugeschriebener Umsatz und ROAS
+SELECT
+    COUNT(*) AS customers_above_average,
+    ROUND(SUM(total_spent), 2) AS revenue_from_above_avg_customers,
+    ROUND(
+        100.0 * SUM(total_spent) / 
+        (SELECT SUM(net_amount) FROM orders),
+        2
+    ) AS revenue_share_pct
+FROM above_avg_customers;
+```
+Zunächst werden die Gesamtausgaben pro Kunde berechnet. Anschließend wird der durchschnittliche Kundenwert bestimmt und die Gruppe mit überdurchschnittlichen Ausgaben abgegrenzt.
 
-* **Ziel:** Vergleich der Marketingkanäle nach Investitionsvolumen und Rentabilität (Return).
-* **Ergebnis:** Der Kanal *Organic* weist mit 8,02 den höchsten ROAS auf, während *Paid Search* mit 1,33 den niedrigsten ROAS bei gleichzeitig größtem Budget verzeichnet.
+
+### 1.5. Berechnen Sie Budget, zugerechneten Umsatz und ROI je Marketingkanal
+
+```sql
+SELECT
+    channel,
+    ROUND(SUM(budget), 2) AS total_budget,
+    ROUND(SUM(attributed_reven), 2) AS total_attributed_revenue,
+    ROUND(SUM(attributed_reven) / NULLIF(SUM(budget), 0), 2) AS roi
+FROM marketing
+GROUP BY channel
+ORDER BY roi DESC;
+```
+Der ROI wird als Verhältnis des zugerechneten Umsatzes zum Marketingbudget definiert. Damit können die Kanäle nicht nur nach Ausgabenvolumen, sondern auch nach ihrer finanziellen Effizienz verglichen werden.
 
 
 ## Block 2. Visualisierungen in Tableau
-
-Jede nachfolgende Visualisierung entspricht einem separaten Aufgabenpunkt. Die begleitenden Texte sind einheitlich strukturiert: Inhalt der Darstellung, Kernergebnisse, analytische Schlussfolgerung und geschäftliche Relevanz.
-
-### 2.1. Saisonalität: Nettoumsatz nach Monaten
+### 2.1. Saisonalität: Visualisieren Sie den monatlichen Umsatz. Gibt es saisonale Spitzen und wann erzielt das Unternehmen den höchsten Umsatz?
 
 
+Das Liniendiagramm zeigt den monatlichen Nettoumsatz von 2022 bis 2024. Die Gesamtentwicklung ist steigend, jedoch nicht gleichmäßig: Neben dem kontinuierlichen Wachstum treten deutliche Spitzen am Ende jedes Jahres auf. Der höchste Wert des gesamten Zeitraums wurde im Dezember 2024 mit 759.390 USD erreicht.
+Der Dezemberumsatz stieg von 72.908 USD im Jahr 2022 auf 206.421 USD im Jahr 2023 und schließlich auf 759.390 USD im Jahr 2024. Dies belegt sowohl einen saisonalen Effekt als auch eine deutliche Skalierung des Geschäfts. Die Visualisierung zeigt ein beschleunigtes Wachstum und zunehmend starke Dezember-Spitzen; ohne ein separates mathematisches Modell sollte der Verlauf jedoch nicht formal als exponentiell bezeichnet werden.
+Betriebswirtschaftliche Schlussfolgerung: Das vierte Quartal und insbesondere der Dezember sind für den Jahresumsatz von zentraler Bedeutung. Bestände, Logistikkapazitäten, Kundenservice und Marketingmaßnahmen müssen frühzeitig geplant werden. Gleichzeitig entsteht durch die Abhängigkeit von einem einzelnen Spitzenmonat ein Risiko, weshalb Maßnahmen zur Stabilisierung der Nachfrage in schwächeren Monaten erforderlich sind.
 
-* **Inhalt der Darstellung:** Ein Liniendiagramm zeigt den monatlichen Nettoumsatz von Anfang 2022 bis Ende 2024. Die Höchstwerte im Dezember sind durch separate Annotationen hervorgehoben.
-* **Kernergebnisse:** Der Umsatz im Dezember stieg von 72.908 USD im Jahr 2022 auf 206.421 USD im Jahr 2023 und erreichte 759.390 USD im Jahr 2024. Die Zeitreihe weist einen deutlich steigenden Gesamttrend auf, wobei das beste Ergebnis auf den Dezember 2024 fällt.
-* **Analytische Schlussfolgerung:** Die Daten zeigen wiederkehrende Spitzenwerte im Dezember. Gleichzeitig lässt sich das Wachstum dieser Spitzenwerte teilweise durch die schnelle Skalierung des Unternehmens erklären. Daher muss die Saisonalität zusammen mit dem Gesamttrend bewertet werden und nicht nur anhand der absoluten Zahlen.
-* **Geschäftliche Relevanz:** Das Unternehmen muss Lagerbestände, Marketingkampagnen und operative Ressourcen frühzeitig auf das vierte Quartal (Q4) vorbereiten. Zur Bestätigung eines stabilen saisonalen Musters ist es ratsam, Daten über weitere Beobachtungsjahre hinweg zu sammeln.
 
-### 2.2. Marketing: Budget vs. Effizienz
+### 2.2. Marketing: Vergleichen Sie die Kanäle nach Budget und ROI. Ist das Budget rational verteilt?
 
 
 
-* **Inhalt der Darstellung:** Ein Streudiagramm (Scatter Plot) vergleicht das Gesamtbudget auf der X-Achse mit dem ROAS auf der Y-Achse. Die Punktgröße zeigt den zugeschriebenen Umsatz.
+Das Streudiagramm stellt das gesamte Marketingbudget auf der X-Achse dem ROI auf der Y-Achse gegenüber. Die höchste kurzfristige Effizienz erzielen Organic mit 802 % und Email mit 650 %. Es folgen Influencer mit 462 % und Referral mit 357 %. Die niedrigsten Werte weisen Social Ads mit 206 % und Paid Search mit 133 % auf.
+Paid Search erhält mit rund 451 Tsd. USD das größte Budget, erzielt jedoch den niedrigsten ROI. Social Ads verfügt ebenfalls über ein hohes Budget von etwa 286 Tsd. USD und erreicht nur den zweitniedrigsten Effizienzwert. Die größten Budgets sind somit nicht mit der höchsten finanziellen Rendite verbunden.
+Betriebswirtschaftliche Schlussfolgerung: Die Budgetstruktur sollte schrittweise überprüft werden. Paid Search und Social Ads sind die wichtigsten Bereiche für eine detaillierte Analyse von Kampagnen, Zielgruppen und Keywords. Ein Teil des Budgets sollte testweise in Influencer, Referral, Email sowie SEO- und Content-Maßnahmen umgeschichtet werden. Gleichzeitig ist zu berücksichtigen, dass ein hoher ROI bei kleinem Budget nicht automatisch bei starker Skalierung erhalten bleibt.
 
-| Kanal | Budget, USD | Zugeschriebener Umsatz, USD | ROAS |
-| :--- | :---: | :---: | :---: |
-| **Organic** | 20.364 | 163.398 | 8,02 |
-| **Email** | 37.468 | 243.610 | 6,50 |
-| **Influencer** | 112.337 | 519.453 | 4,62 |
-| **Referral** | 73.766 | 263.536 | 3,57 |
-| **Social Ads** | 286.488 | 589.544 | 2,06 |
-| **Paid Search**| 450.959 | 598.703 | 1,33 |
 
-* **Kernergebnisse:** *Organic* und *Email* haben den höchsten ROAS bei den kleinsten Budgets. *Paid Search* erhält 45,95 % des Gesamtbudgets, hat aber den niedrigsten ROAS. Auch *Social Ads* verbindet ein großes Budget mit einem relativ geringen Ertrag.
-* **Analytische Schlussfolgerung:** Die aktuelle Budgetverteilung ist nicht optimal. Die höchsten Budgets fließen in Kanäle mit niedrigem ROAS, während sehr effiziente Kanäle nur wenig Geld bekommen.
-* **Geschäftliche Relevanz:** Wir sollten das Budget schrittweise testen und optimieren, anstatt *Paid Search* sofort abzuschalten. Es ist wichtig zu prüfen, wie effizient *Organic*, *Email*, *Influencer* und *Referral* bleiben, wenn wir dort das Budget erhöhen.
-
-### 2.3. Kategorien: Umsatzvolumen vs. Rentabilität
+### 2.3. Kategorien: Vergleichen Sie Umsatz, Marge und Retouren. Welche Kategorien sind „Hidden Diamonds“?
 
 
 
-* **Inhalt der Darstellung:** Die X-Achse zeigt den Umsatz der Kategorie, die Y-Achse die durchschnittliche Produktmarge. Die Punktgröße stellt die Rückgabequote dar.
-* **Kernergebnisse:** *Electronics* generiert 2.097.901,06 USD Umsatz, hat aber nur 12 % Marge und die höchste Rückgabequote von rund 15,97 %. *Beauty* bringt 168.624,42 USD Umsatz, hat aber die höchste Marge von 55 % und eine geringere Rückgabequote von rund 9,97 %. *Toys* kombiniert ebenfalls eine hohe Marge von 40 % mit relativ wenigen Rückgaben.
-* **Analytische Schlussfolgerung:** *Electronics* bringt den meisten Umsatz, ist aber nicht die profitabelste Kategorie. *Beauty* ist der beste Kandidat für weiteres Wachstum.
-* **Geschäftliche Relevanz:** Bei *Electronics* müssen wir die schlechten Produkte und die Gründe für Rückgaben analysieren. Bei *Beauty* sollten wir das Sortiment erweitern und mehr Werbung machen, um den Gewinn zu steigern.
+Das Streudiagramm vergleicht die Kategorien anhand des Gesamtumsatzes auf der X-Achse und der durchschnittlichen Marge auf der Y-Achse. Die Punktgröße verstärkt zusätzlich die visuelle Wahrnehmung des Margenniveaus; die Retourenquote dient als ergänzender Kontext für die Bewertung der Kategorien.
+Electronics dominiert den Umsatz mit rund 2,1 Mio. USD, weist jedoch mit 12 % die niedrigste Marge auf. Die Kategorie erzeugt ein hohes Umsatzvolumen, jeder Umsatzdollar trägt jedoch deutlich weniger zur Bruttomarge bei als in anderen Kategorien.
+Die höchste Marge erzielt Beauty mit 55 % bei einem Umsatz von rund 168,6 Tsd. USD. Auch Clothing mit 45 % und Toys mit 40 % weisen hohe Margen auf. Beauty ist der überzeugendste „Hidden Diamond“: Das derzeitige Umsatzvolumen liegt deutlich unter Electronics, das Potenzial für profitables Wachstum ist jedoch wesentlich höher.
+Betriebswirtschaftliche Schlussfolgerung: Electronics sollte als Umsatztreiber erhalten bleiben, seine Wirtschaftlichkeit muss jedoch durch bessere Einkaufskonditionen, Preisgestaltung, Sortimentsoptimierung und Retourenkontrolle verbessert werden. Beauty sollte durch eigenständige Kampagnen, Sortimentserweiterung und Cross-Selling ohne tiefe flächendeckende Rabatte skaliert werden.
 
-### 2.4. Regionen in der Dynamik
-
-
-
-* **Inhalt der Darstellung:** Ein Liniendiagramm mit mehreren Linien vergleicht den Nettoumsatz von fünf Regionen über die Jahre hinweg.
-* **Kernergebnisse:** Im Jahr 2024 hat *North America* mit 718,73 Tsd. USD den größten Umsatz. *Southeast Asia* erreicht 613,90 Tsd. USD, *Europe* 545,63 Tsd. USD, *Latin America* 321,39 Tsd. USD und *Middle East* 281,07 Tsd. USD. Der Umsatz in *Southeast Asia* ist im Vergleich zu 2022 um das 48-Fache gestiegen.
-* **Analytische Schlussfolgerung:** *Southeast Asia* ist die am schnellsten wachsende Region. Ein Teil dieses Effekts liegt jedoch an der sehr niedrigen Basis im Startjahr. *Europe* wächst weiter, aber langsamer als die neuen Märkte.
-* **Geschäftliche Relevanz:** *North America* bleibt der wichtigste Markt beim Gesamtvolumen. *Southeast Asia* braucht jetzt eine genaue Analyse des Marktpotenzials, der operativen Risiken und der Chancen für eine weitere Expansion.
-
-### 2.5. Kundenbeitrag: Pareto-Analyse
+### 2.4. Regionale Entwicklung: Welche Region wächst am schnellsten und welche verliert relativ an Dynamik?
 
 
 
-* **Inhalt der Darstellung:** Die Balken zeigen den Umsatz von aufeinanderfolgenden 5-Prozent-Kundengruppen, und die Linie zeigt den kumulierten Anteil am Gesamtumsatz.
-* **Kernergebnisse:** Die Top 5 % der Kunden (150 Personen) bringen 1.218.211,48 USD ein. Das entspricht 35,07 % des gesamten Nettoumsatzes. Die restlichen 95 % der Kunden generieren 64,93 %.
-* **Analytische Schlussfolgerung:** Die klassische 80/20-Regel bestätigt sich hier nicht. Der Umsatz ist gleichmäßiger verteilt. Dennoch ist die Konzentration von über einem Drittel des Umsatzes bei nur 5 % der Kunden strategisch sehr wichtig.
-* **Geschäftliche Relevanz:** Dieses Top-Segment benötigt ein eigenes Kundenbindungsprogramm, eine Überwachung der Kundenaktivität und eine personalisierte Kommunikation.
+Das Mehrliniendiagramm zeigt den Nettoumsatz der fünf Regionen von 2022 bis 2024. Im Jahr 2024 führt North America mit 718,73 Tsd. USD. Es folgen Southeast Asia mit 613,90 Tsd. USD, Europe mit 545,63 Tsd. USD, Latin America mit 321,39 Tsd. USD und Middle East mit 281,07 Tsd. USD.
+Southeast Asia wächst am schnellsten: Der Umsatz stieg von rund 12,72 Tsd. USD im Jahr 2022 auf 613,90 Tsd. USD im Jahr 2024 und damit um mehr als das 48-Fache. Europe wächst ebenfalls weiter, weist jedoch die niedrigste relative Wachstumsrate der fünf Regionen auf. Europe ist daher als Markt mit relativer Verlangsamung und nicht als schrumpfender Markt einzuordnen.
+Betriebswirtschaftliche Schlussfolgerung: Southeast Asia ist der wichtigste Markt für die weitere Expansion, während North America beim absoluten Umsatz führend bleibt. In Europe sollte der Schwerpunkt von breiter Akquisition auf Kundenbindung, Personalisierung und eine höhere Wiederkaufsfrequenz verlagert werden.
+
+### 2.5. Kundenbeitrag: Welchen Umsatzanteil erzielen die Top-Kundinnen und -Kunden?
 
 
-## Block 3. Dashboard für den CEO
 
-* **Inhalt der Darstellung:** Das Dashboard kombiniert vier KPI-Karten mit vier zentralen Visualisierungen. Die KPIs zeigen einen Nettoumsatz von 3,47 Mio. USD, 12.274 Bestellungen, einen durchschnittlichen Bestellwert von 283,04 USD und eine Rückgabequote von 9,77 %. Darunter befinden sich die Saisonalität, die regionale Dynamik, die Pareto-Analyse und das Scatter-Plot der Kategorien.
+Das Pareto-Diagramm ordnet die Kundinnen und Kunden nach ihren Ausgaben und zeigt den kumulierten Umsatzanteil. Die Top 5 % der Kunden, also 150 von 3.000 Personen, generieren 35,1 % des Gesamtumsatzes beziehungsweise rund 1,218 Mio. USD. Die übrigen 95 % tragen 64,9 % bei.
+Das Ergebnis zeigt eine relevante Umsatzkonzentration, bestätigt jedoch nicht die klassische 80/20-Regel. Der Umsatz von ShopSphere ist breiter über die Kundenbasis verteilt, als es das traditionelle Pareto-Prinzip erwarten ließe.
+Betriebswirtschaftliche Schlussfolgerung: Für die Top 5 % ist ein eigenständiges Bindungsprogramm erforderlich. Gleichzeitig darf die breite Kundenbasis nicht vernachlässigt werden, da sie nahezu zwei Drittel des Umsatzes erwirtschaftet.
 
 
-Das Dashboard ist logisch aufgebaut – vom allgemeinen Zustand des Geschäfts bis hin zu den Quellen und der Qualität der Ergebnisse.
+### 2.6. Kreative Analyse: Untersuchen Sie einen bisher nicht analysierten Faktor und leiten Sie einen Business Insight ab
 
-1. **KPI-Karten:** Zuerst sieht der Manager die Größe des Geschäfts und vier Kennzahlen: Umsatz, Bestellungen, durchschnittlichen Bestellwert und Rückgaben.
-2. **Saisonalität und Regionen:** Danach beantwortet das Dashboard die Fragen, wann und wo das Wachstum entsteht. Das ist die Makroebene des Geschäfts.
-3. **Pareto und Kategorien:** Die untere Ebene erklärt, wer den Umsatz generiert und wie gut das Produktportfolio ist.
-4. **Fazit für das Management:** Der Aufbau führt vom Ergebnis zu den Ursachen: Gesamtgröße → Dynamik → Geografie → Kundenkonzentration → Qualität der Kategorien.
+Das horizontale Balkendiagramm vergleicht die Retourenquote nach Endgerät und Versandbedingung. Bei kostenpflichtigem Versand beträgt sie rund 7 % auf Desktop, 5 % auf Mobile und 6 % auf Tablet. Bei kostenlosem Versand steigt sie auf 11 %, 11 % beziehungsweise 10 %.
+Der Effekt ist auf allen Geräten konsistent: Kostenloser Versand erhöht die Retourenquote um etwa 4–6 Prozentpunkte. Der entscheidende Faktor ist in dieser Analyse daher nicht das Endgerät, sondern die Versandbedingung.
+Betriebswirtschaftliche Schlussfolgerung: Kostenloser Versand kann weniger überlegte Käufe oder die Bestellung mehrerer Produktvarianten fördern. Seine Wirtschaftlichkeit muss über das Verhältnis von zusätzlicher Conversion und zusätzlichem Umsatz zu den Kosten der Hin- und Rücklogistik bewertet werden.
 
-### Strategische Insights
 
-1. Das Geschäft wächst schnell, aber die Rückgabequote liegt bereits bei 9,77 %. Das Wachstum muss daher immer zusammen mit der Qualität der Erträge bewertet werden.
-2. *Southeast Asia* ist der wichtigste neue Wachstumstreiber, während *North America* der größte Markt bleibt. Die Strategie sollte den Schutz des bestehenden Volumens mit einer gezielten Expansion verbinden.
-3. Die größte Produktkategorie ist nicht die profitabelste, und die Top 5 % der Kunden bringen 35,07 % des Umsatzes. Entscheidungen über das Sortiment und die Kundenbindung haben eine höhere Priorität als eine einfache Umsatzsteigerung.
-   
 
-## Block 4. Strategische Business-Cases
+## Block 3. Interaktive Dashboards für die Geschäftsleitung
 
-### Frage 3: Welcher Kanal bringt das meiste Geld pro investiertem Dollar?
+Die analytische Lösung besteht aus zwei miteinander verbundenen Seiten: „Geschäftsüberblick“ und „Marketing & Wachstum“. Die erste Seite zeigt den allgemeinen Geschäftszustand, Saisonalität, regionale Entwicklung und die Struktur wertvoller Kunden. Die zweite Seite überführt die Analyse auf die Ebene steuerbarer Hebel: Marketingeffizienz, langfristiger Kundenwert und Rentabilität der Produktkategorien.
 
-Der Kanal *Organic* hat mit 8,02 den höchsten ROAS. Das bedeutet 8,02 USD Umsatz pro 1 USD Marketingkosten. Auf dem zweiten Platz liegt *Email* mit einem ROAS von 6,50. Den niedrigsten Wert hat *Paid Search* mit 1,33. Gleichzeitig erhält *Paid Search* mit 450.959 USD rund 45,95 % des gesamten Budgets.
+### Dashboard 1. Geschäftsüberblick
 
-Das bedeutet: Der größte Teil des Budgets fließt in den Kanal mit der geringsten relativen Effizienz. Allerdings generiert *Paid Search* mit 598.703 USD den höchsten absoluten Umsatz. Daher sollte man diesen Kanal nicht einfach als „schlecht“ bewerten. Es ist wichtig, seine Grenzeffizienz und die tatsächliche Rentabilität nach Abzug der Produktmarge zu prüfen.
+![Dashboard Geschäftsüberblick](photo_11_2026-07-24_15-38-52.jpg)
 
-### Frage 4: Stimmen die ROAS-Ergebnisse mit dem langfristigen Kundenwert (LTV) überein?
+Im oberen Bereich befinden sich vier KPI-Karten:
+Nettoumsatz — 3,47 Mio. USD;
+Bestellungen — 12.274;
+durchschnittlicher Bestellwert — 283,04 USD;
+Retourenquote — 9,77 %.
+Unterhalb der KPI-Karten befinden sich die monatliche Umsatzentwicklung und die regionale Entwicklung. Diese Visualisierungen beantworten, wann und in welchen Regionen das Wachstum entsteht. Die untere Zeile enthält das Pareto-Diagramm und die Heatmap der Top-5-%-Kunden. Das Pareto-Diagramm zeigt die Umsatzkonzentration, während die Heatmap Herkunftsregionen und Akquisitionskanäle der wertvollsten Kunden detailliert darstellt.
+Die Filter `Region` und `Jahr` gelten für die kompatiblen Arbeitsblätter der primären Datenquelle: KPI-Karten, monatlicher Umsatz und regionale Entwicklung. Pareto und Heatmap basieren auf separaten aggregierten Datenquellen und bilden den strategischen Gesamtzeitraum 2022–2024 ab. Dadurch wird nicht fälschlicherweise vermittelt, dass ein Jahresfilter die Zusammensetzung der Top 5 % automatisch neu berechnet.
 
-Die Rankings stimmen nicht überein. *Organic* und *Email* sind führend beim ROAS, aber *Influencer* und *Referral* haben den höchsten durchschnittlichen LTV – 1.985,73 USD und 1.791,82 USD. *Organic* hat einen LTV von 1.316,13 USD, *Email* von 1.074,46 USD, *Social Ads* von 822,09 USD und *Paid Search* von 648,10 USD.
+### Dashboard 2. Marketing & Wachstum
 
-*Organic* bietet die beste Balance zwischen kurzfristiger Effizienz und langfristigem Wert. *Influencer* und *Referral* bringen wertvollere Kunden, obwohl ihr ROAS niedriger ist. *Paid Search* schneidet bei beiden relativen Kennzahlen am schlechtesten ab.
+![Dashboard Marketing & Wachstum](photo_12_2026-07-24_15-38-52.jpg)
 
-### Frage 5: Wie soll das Budget neu verteilt werden? Welche Risiken hat diese Empfehlung?
+Das zweite Dashboard kombiniert drei Diagramme mit einem Textblock strategischer Schlussfolgerungen:
+Streudiagramm „Marketingbudget — ROI“;
+Balkendiagramm zum LTV nach Akquisitionskanal;
+Streudiagramm „Umsatz — Marge“ nach Produktkategorie;
+zusammenfassender Entscheidungsblock zur Budget- und Produktsteuerung.
+Die durchgängige Geschäftsidee lautet: Wie soll das Marketingbudget eingesetzt werden, damit nicht nur kurzfristige Rendite, sondern auch wertvolle Kunden und profitables Kategorienwachstum entstehen?
+Der ROI zeigt die kurzfristige Ausgabeneffizienz, der LTV beschreibt die langfristige Qualität der gewonnenen Kunden und die Kategorienanalyse identifiziert Produkte mit dem höchsten Potenzial für profitables Wachstum. Tooltips und Markierungen ermöglichen eine vertiefte Analyse einzelner Kanäle und Kategorien, ohne das Dashboard durch globale Filter zu überladen, die zwischen inkompatiblen Datenquellen nicht zuverlässig funktionieren.
 
-Der empfohlene erste Schritt ist ein kontrollierter Pilot-Test. Dabei werden 15–20 % des *Paid Search*-Budgets (ca. 67,6–90,2 Tsd. USD) abgezogen. Dieses Geld soll in mehreren Testwellen auf *Email*, *Influencer*, *Referral* und *Organic* verteilt werden.
+### 3.2. Beschreiben Sie die Kompositionslogik: Welche Geschichte erzählen die Dashboards und warum wurde diese Reihenfolge gewählt?
 
-1. **Organic und Email:** Das Budget schrittweise erhöhen und prüfen, ob der ROAS bei Skalierung hoch bleibt.
-2. **Influencer und Referral:** In die Qualität der Partner und in Empfehlungsmechanismen investieren, da diese Kanäle Kunden mit dem höchsten LTV bringen.
-3. **Paid Search:** Nicht den gesamten Kanal abschalten, sondern nur schwache Kampagnen, Keywords, Zielgruppen und Regionen reduzieren.
-4. **Kontrolle:** Neben dem ROAS auch den inkrementellen Umsatz, CPA, die Wiederkaufsrate, Rückgaben und den Bruttogewinn bewerten.
+Die Komposition führt vom allgemeinen Ergebnis über die Ursachen bis zu konkreten Managemententscheidungen.
+Die erste Seite beginnt mit KPI-Karten, die einen unmittelbaren Überblick über Größenordnung und operative Qualität des Geschäfts geben. Danach erklären Zeit- und Regionsdiagramm, wann und wo das Ergebnis entstanden ist. Die untere Zeile zeigt die Kundenstruktur, die Umsatzkonzentration sowie das Profil der wertvollsten Käufergruppen.
+Die zweite Seite beantwortet anschließend, welche Investitionen und Kategorien das weitere profitable Wachstum unterstützen sollen. Sie vergleicht zunächst Budget und ROI, ergänzt diese kurzfristige Perspektive um den langfristigen LTV und schließt die Analyse mit der Produktmarge ab.
+Das übergreifende Storytelling lautet:
+Ergebnis → zeitliche und regionale Wachstumstreiber → Kundenwert → Marketingeffizienz → Produktrentabilität → Managemententscheidung.
 
-*   **Sättigungsrisiko:** Effiziente Kanäle können ihren hohen ROAS verlieren, wenn das Budget zu schnell steigt.
-*   **Attributionsrisiko:** Der zugeschriebene Umsatz spiegelt möglicherweise nicht den realen inkrementellen Beitrag des Kanals wider.
-*   **Kohorten-Altersrisiko:** Kunden aus verschiedenen Kanälen hatten möglicherweise unterschiedlich viel Zeit, um ihren LTV aufzubauen.
-*   **Kapazitätsrisiko:** *Influencer* und *Referral* haben möglicherweise ein begrenztes Skalierungspotenzial.
 
-### Case B: Welche Kategorien schaffen wirklich Wert?
+### 3.3. Welche drei Erkenntnisse soll die Leserin oder der Leser innerhalb der ersten 30 Sekunden erfassen?
 
-#### Frage 6: Welche Kategorie erzeugt die „Illusion von Volumen“?
+ShopSphere erzielte 3,47 Mio. USD Nettoumsatz; der historische Monatsrekord lag im Dezember 2024 bei 759.390 USD. Das Wachstum ist stark, hängt jedoch wesentlich von einer saisonalen Spitze ab.
+Paid Search erhält mit rund 451 Tsd. USD das größte Budget, weist jedoch den niedrigsten ROI von 133 % und den niedrigsten LTV von 648 USD auf. Die aktuelle Budgetallokation muss überprüft werden.
+Die Top 5 % der Kunden generieren 35,1 % des Umsatzes, Southeast Asia ist die dynamischste Region und Beauty erzielt mit 55 % die höchste Marge. Zukünftiges Wachstum muss Kundenbindung, regionale Expansion und den Ausbau margenstarker Kategorien verbinden.
 
-*Electronics* erzielt mit 2.097.901,06 USD den größten Umsatz, hat aber nur eine Produktmarge von 12 % und die höchste Rückgabequote von rund 15,97 %. Diese Kategorie ist wichtig für die Skalierung, aber ein hoher Umsatz bedeutet nicht automatisch einen hohen Gewinn.
+## Block 4. Strategische Business Cases
+### 4.3. Welcher Kanal erzielt den höchsten beziehungsweise niedrigsten ROI und wohin fließt der größte Budgetanteil?
 
-Die richtige Entscheidung ist es, *Electronics* nicht automatisch zu reduzieren, sondern eine Analyse auf SKU-Ebene (Produktebene) durchzuführen. Wir müssen Produkte mit niedriger Marge, hoher Rückgabequote und großen Logistikkosten identifizieren. Für eine Management-Entscheidung wird die Kennzahl des Bruttogewinns nach Rückgaben benötigt.
+Den höchsten ROI erzielt Organic mit 802 %, gefolgt von Email mit 650 %. Den niedrigsten ROI weist Paid Search mit 133 % auf. Gleichzeitig erhält Paid Search mit rund 451 Tsd. USD das größte Budget. Social Ads verfügt über etwa 286 Tsd. USD und erreicht mit 206 % den zweitniedrigsten ROI.
+Die derzeitige Ausgabenstruktur ist unausgewogen: Die größten Mittel fließen in Kanäle mit der niedrigsten aggregierten Rendite. Dies reicht jedoch nicht aus, um die Kanäle vollständig abzuschalten, da auch ihre Funktion im oberen Funnel, die Attributionslogik und die Grenzwirkung bei Skalierung berücksichtigt werden müssen.
 
-#### Frage 7: Gibt es einen „versteckten Diamanten“ unter den Kategorien?
 
-*Beauty* ist der offensichtlichste „versteckte Diamant“. Die Kategorie hat einen Umsatz von 168.624,42 USD, die höchste Produktmarge von 55 % und eine geringere Rückgabequote von rund 9,97 %. *Toys* hat ebenfalls eine gute Kombination aus Marge und Rückgaben, aber ein geringeres Verkaufsvolumen.
+### 4.4. Vergleichen Sie die Kanäle nach ROI und langfristigem Kundenwert. Stimmen die Ergebnisse überein?
 
-Die Kategorie *Beauty* sollte durch ein kontrolliertes Experiment skaliert werden: Das Sortiment erweitern, separate Kampagnen starten, Cross-Selling testen und den Bruttogewinn, die Rückgaben sowie die Kannibalisierung anderer Kategorien überwachen. Das Ziel ist es, das Volumen zu erhöhen, ohne die Wirtschaftlichkeit der Kategorie zu verschlechtern.
+![Langfristiger Kundenwert nach Akquisitionskanal](photo_7_2026-07-24_15-38-52.jpg)
 
-### Case C: Rabatte und wertvolle Kunden
+Die Ergebnisse stimmen nur teilweise überein. Beim LTV führen Influencer mit 1.986 USD und Referral mit 1.792 USD. Es folgen Organic mit 1.316 USD, Email mit 1.074 USD, Social Ads mit 822 USD und Paid Search mit 648 USD.
+Organic und Email erzielen die höchste kurzfristige Budgeteffizienz. Influencer und Referral gewinnen dagegen die langfristig wertvollsten Kunden. Paid Search ist bei beiden Kennzahlen der schwächste Kanal.
+Betriebswirtschaftliche Schlussfolgerung: Das Marketingbudget darf nicht anhand eines einzigen KPI verteilt werden. Der ROI bewertet die aktuelle Ausgabeneffizienz, während der LTV die langfristige Qualität der gewonnenen Zielgruppe abbildet.
 
-#### Frage 8: Bilden hohe Rabatte eine langfristige Kundenloyalität?
+### 4.5. Wie soll das Budget umverteilt werden und welche Risiken entstehen?
 
-Im Diagramm zeigen sich 11.691 Bestellungen von Stammkunden (regulären Kunden) und 583 Bestellungen von rabattorientierten Kunden. Da die absoluten Zahlen jedoch teilweise von der unterschiedlichen Größe der Segmente abhängen, sollte die durchschnittliche Kaufhäufigkeit pro Kunde die Hauptkennzahl sein.
+Das Budget von Paid Search sollte in einem schrittweisen Test um 30–40 % reduziert werden. Ein Teil der frei werdenden Mittel sollte in Influencer und Referral fließen, da diese Kanäle den höchsten LTV erzielen. Email sollte aufgrund seines hohen ROI beibehalten oder moderat ausgebaut werden. Organic ist durch SEO, Content und technische Optimierung zu unterstützen. Social Ads benötigt ein Audit und eine selektive Kürzung ineffizienter Kampagnen.
+Wesentliche Risiken:
+Paid Search kann den Erstkontakt erzeugen, während spätere Käufe anderen Kanälen zugerechnet werden;
+Influencer und Referral können nur begrenzt skalierbar sein und bei höheren Investitionen sinkende Grenzerträge aufweisen;
+LTV ohne Kontrolle des Kohortenalters kann Kanäle mit einer älteren Kundenbasis überbewerten;
+eine Kürzung des bezahlten Traffics im vierten Quartal kann die saisonale Umsatzspitze überproportional beeinträchtigen.
+Die Umverteilung muss deshalb über kontrollierte Budgetexperimente erfolgen. Dabei sind Umsatz, Neukunden, CAC, ROI und kohortenbasierter LTV gleichzeitig zu überwachen.
 
-Bei den normalisierten Daten tätigen Kunden mit einem durchschnittlichen Rabatt von über 20 % nur 2,17 Bestellungen, verglichen mit 4,35 Bestellungen bei den restlichen Kunden. Ihr durchschnittlicher LTV ist ebenfalls deutlich niedriger. Die verfügbaren Daten bestätigen also nicht, dass tiefe Rabatte eine langfristige Loyalität aufbauen.
 
-Dieses Ergebnis beweist keine Kausalität. Für eine genauere Bewertung müssen das Registrierungsdatum, die Kategorie, die Region, der Akquisitionskanal und der Beobachtungszeitraum kontrolliert werden.
+### 4.6. Welche Kategorie erzeugt eine „Volumenillusion“?
 
-### Case C: Rabatte und wertvolle Kunden
+Electronics erzeugt die stärkste Volumenillusion. Die Kategorie erzielt rund 2,1 Mio. USD Umsatz und liegt damit deutlich vor allen anderen Kategorien, weist jedoch mit 12 % die niedrigste Marge auf.
+Zum Vergleich: Beauty erzielt 55 %, Clothing 45 %, Toys 40 %, Home & Kitchen 35 %, Sports 30 % und Books 25 % Marge. Ein Umsatzdollar in Electronics erzeugt somit deutlich weniger Bruttomarge als ein Umsatzdollar in Beauty oder Clothing.
+Electronics sollte als Umsatztreiber erhalten bleiben. Seine Wirtschaftlichkeit muss jedoch über bessere Einkaufskonditionen, SKU-Optimierung, Preisgestaltung und Retourenkontrolle verbessert werden. Parallel ist der Anteil margenstarker Kategorien im Produktportfolio auszubauen.
 
-#### Frage 8: Bilden hohe Rabatte eine langfristige Kundenloyalität?
+### 4.7. Gibt es einen „Hidden Diamond“ mit kleinem Umsatz, hoher Marge und gesunder Retourenstruktur?
 
-Im Diagramm zeigen sich 11.691 Bestellungen von Stammkunden (regulären Kunden) und 583 Bestellungen von rabattorientierten Kunden. Da die absoluten Zahlen jedoch teilweise von der unterschiedlichen Größe der Segmente abhängen, sollte die durchschnittliche Kaufhäufigkeit pro Kunde die Hauptkennzahl sein.
+Der überzeugendste „Hidden Diamond“ ist Beauty. Der Umsatz beträgt rund 168,6 Tsd. USD, die Marge ist mit 55 % jedoch die höchste aller Kategorien. Das derzeitige Volumen ist vergleichsweise klein, wodurch die hohe Marge erhebliches Potenzial für profitables Wachstum bietet.
+Strategische Maßnahmen:
+Erweiterung des Beauty-Sortiments und Prüfung neuer Marken oder Private-Label-Angebote;
+eigenständige Kampagnen ohne tiefe flächendeckende Rabatte;
+Cross-Selling an die Top-5-%-Kundengruppe;
+schrittweise Skalierung unter Kontrolle von Marge, Retouren, Wiederkäufen und Kannibalisierung.
 
-Bei den normalisierten Daten tätigen Kunden mit einem durchschnittlichen Rabatt von über 20 % nur 2,17 Bestellungen, verglichen mit 4,35 Bestellungen bei den restlichen Kunden. Ihr durchschnittlicher LTV ist ebenfalls deutlich niedriger. Die verfügbaren Daten bestätigen also nicht, dass tiefe Rabatte eine langfristige Loyalität aufbauen.
+### 4.8. Binden sich Kundinnen und Kunden, die überwiegend mit mehr als 20 % Rabatt kaufen, langfristig an das Unternehmen?
 
-Dieses Ergebnis beweist keine Kausalität. Für eine genauere Bewertung müssen das Registrierungsdatum, die Kategorie, die Region, der Akquisitionskanal und der Beobachtungszeitraum kontrolliert werden.
+![Vergleich rabattorientierter Kunden mit der übrigen Kundenbasis](photo_8_2026-07-24_15-38-52.jpg)
 
-#### Frage 9: Welchen Anteil am Umsatz bringen die Top-5-%-Kunden? Wer sind diese Personen und wie kann man sie binden?
+Nein. Kundinnen und Kunden mit hohen durchschnittlichen Rabatten weisen eine deutlich geringere Loyalität auf. Im rabattorientierten Segment liegt die durchschnittliche Bestellanzahl bei 2,17, der durchschnittliche LTV bei rund 384 USD und der Anteil der Einmalkäufer bei 25,0 %. Bei den übrigen Kunden liegen diese Werte bei 4,35 Bestellungen, 1.261 USD LTV und 16,6 % Einmalkäufern.
+Rabattorientierte Kunden kaufen somit ungefähr halb so häufig, weisen einen rund 70 % niedrigeren LTV auf und bleiben häufiger Einmalkäufer.
+Betriebswirtschaftliche Schlussfolgerung: Flächendeckende Rabatte von mehr als 20 % schaffen keine nachhaltige Kundenbindung. Geeigneter sind personalisierte Angebote, Boni für den nächsten Einkauf, Bundles und Loyalitätsprogramme. Hohe Rabatte sollten selektiv für Abverkauf, Reaktivierung oder kontrollierte Experimente eingesetzt werden.
 
-Die Top-5-%-Kunden generieren 35,07 % des gesamten Nettoumsatzes. Die stärkste Kombination ist *Europe × Influencer*: Hier bringen 12 Kunden rund 125,9 Tsd. USD ein. Weitere starke Gruppen konzentrieren sich auf *Southeast Asia* und *North America* und kommen häufig über die Kanäle *Influencer*, *Organic* und *Referral*.
+### 4.9. Welchen Umsatzanteil erzielen die Top 5 %, wer sind diese Kunden und wie können sie gebunden werden?
 
-1. **VIP-Service:** Priorisierter Support, früher Zugang zu neuen Produkten und persönliche Empfehlungen.
-2. **Churn-Monitoring:** Automatisches Signal im CRM-System, wenn ein Kunde sein typisches Kaufintervall überschreitet.
-3. **Personalisierung:** Angebote auf Basis der Kategorie-Historie und der tatsächlichen Produktmarge statt universeller Rabatte.
-4. **Feedback-Schleifen:** Separate Analyse der Rückgabegründe und der Kundenzufriedenheit unter den Top-Kunden.
-5. **Kostenkontrolle der Privilegien:** Kostenloser Versand, Geschenke und Boni müssen anhand der Deckungsbeitragsmarge (Contribution Margin) bewertet werden.
+![Umsatz der Top-5-%-Kunden nach Region und Kanal](photo_9_2026-07-24_15-38-52.jpg)
+
+Die Top 5 % der Kunden — 150 Personen — generieren 35,07 % des Gesamtumsatzes beziehungsweise rund 1.218.211 USD.
+Die stärksten Kombinationen aus Region und Kanal sind:
+Europe × Influencer — 125.894 USD;
+Southeast Asia × Organic — 117.095 USD;
+Southeast Asia × Influencer — 104.978 USD;
+North America × Influencer — 95.328 USD;
+North America × Organic — 89.250 USD.
+Das Profil der Top-Kundengruppe bestätigt die besondere Bedeutung von Influencer und Organic sowie der Regionen Europe, Southeast Asia und North America.
+Für dieses Segment ist ein VIP-Programm ohne tiefe Rabatte geeignet: früher Zugang zu neuen Produkten, priorisierter Support, personalisierte Empfehlungen, Servicevorteile und Trigger-Kommunikation bei sinkender Aktivität. Gleichzeitig muss das mittlere Kundensegment weiterentwickelt werden, um die Abhängigkeit von 150 besonders wertvollen Personen zu reduzieren.
+
+
+## Block 5. Statistisches Denken: A/B-Experiment
+### 5.10. Vergleichen Sie den durchschnittlichen Bestellwert der Gruppen A und B über alle Bestellungen des Experiments
+
+Gruppe A umfasst 3.681 Bestellungen mit einem durchschnittlichen Bestellwert von 281,73 USD. Gruppe B umfasst 3.674 Bestellungen mit einem durchschnittlichen Bestellwert von 287,27 USD.
+Deskriptiv liegt B um 5,54 USD beziehungsweise rund 2,0 % über A. Auf den ersten Blick erscheint Variante B daher besser. Der Gesamtmittelwert zeigt jedoch nicht, ob der Effekt für unterschiedliche Kundengruppen gleich ist, und beweist keine statistische Signifikanz.
+
+### 5.11. Vergleichen Sie A und B getrennt für neue und wiederkehrende Kunden. Was zeigt die Segmentierung?
+
+![Durchschnittlicher Bestellwert der A/B-Varianten nach Kundentyp](photo_10_2026-07-24_15-38-52.jpg)
+
+Die Segmentierung ergibt:
+A, Neukunden: 264 Bestellungen, durchschnittlicher Bestellwert 223,30 USD;
+B, Neukunden: 256 Bestellungen, durchschnittlicher Bestellwert 266,21 USD;
+A, Bestandskunden: 3.417 Bestellungen, durchschnittlicher Bestellwert 286,24 USD;
+B, Bestandskunden: 3.418 Bestellungen, durchschnittlicher Bestellwert 288,85 USD.
+Bei Neukunden beträgt der Anstieg 42,91 USD beziehungsweise 19,2 %. Bei Bestandskunden liegt er lediglich bei 2,61 USD beziehungsweise 0,9 %.
+Die zentrale Erkenntnis lautet: Der Effekt von Variante B ist heterogen. Nahezu der gesamte praktisch relevante Anstieg konzentriert sich auf das kleine Segment der Neukunden, während der Unterschied bei Bestandskunden minimal ist. Die im Aufgabenkontext als Simpson-Paradoxon bezeichnete Segmentierung verändert die betriebswirtschaftliche Interpretation des aggregierten Ergebnisses wesentlich. Da sich die Wirkungsrichtung statistisch nicht umkehrt, ist der Begriff „verborgene Effektheterogenität“ präziser.
+
+
+### 5.12. Für welche Kundengruppe soll Variante B eingeführt werden und kann sie für alle aktiviert werden?
+
+Variante B sollte vorrangig für Neukunden eingeführt werden, da ihr durchschnittlicher Bestellwert in diesem Segment um 19,2 % höher liegt. Bei Bestandskunden beträgt der Anstieg lediglich 0,9 %, sodass ein praktisch relevanter Vorteil nicht nachgewiesen ist.
+Ein vollständiger Rollout für alle Nutzer ist derzeit nicht begründet. Die geeignete Lösung ist ein zielgerichteter Rollout für Neukunden mit anschließender Überwachung von Conversion, durchschnittlichem Bestellwert, Checkout-Abbrüchen, Retouren und Deckungsbeitrag.
+Vor einer endgültigen Entscheidung ist ein Signifikanztest mit Konfidenzintervall und Effektgröße erforderlich. Der durchschnittliche Bestellwert allein zeigt die Wirkung auf die Conversion nicht. Falls B den Bestellwert erhöht, gleichzeitig aber die Abschlussrate reduziert, kann der gesamte Geschäftseffekt negativ ausfallen.
+
+### 5.13. Wie könnte Variante B manipulativ „verkauft“ oder „begraben“ werden und wie muss das Ergebnis fair präsentiert werden?
+
+Um B zu „verkaufen“, könnte ausschließlich das Neukundenergebnis gezeigt werden: „Der durchschnittliche Bestellwert steigt um 19,2 %.“ Diese Aussage ist sachlich korrekt, aber ohne den Hinweis irreführend, dass Neukunden nur etwa 7 % der Bestellungen im Experiment ausmachen.
+Um B zu „begraben“, könnte ausschließlich das Ergebnis der Bestandskunden gezeigt werden: „Der Anstieg beträgt nur 0,9 %.“ Auch diese Aussage ist korrekt, verschweigt jedoch den starken positiven Effekt bei Neukunden.
+Eine faire Darstellung muss gleichzeitig enthalten:
+Gesamtergebnis: +2,0 %;
+Ergebnis der Neukunden: +19,2 %;
+Ergebnis der Bestandskunden: +0,9 %;
+Stichprobengrößen aller vier Untergruppen;
+Konfidenzintervalle, p-Wert und Effektgröße nach Durchführung eines statistischen Tests;
+den Hinweis, dass ohne Conversion-Kennzahl keine vollständige Bewertung des Checkouts möglich ist.
+Variante B besitzt ein starkes deskriptives Potenzial für Neukunden, darf jedoch nicht als universell bessere Lösung für die gesamte Kundenbasis positioniert werden.
+
+## Abschließende Empfehlungen für die Geschäftsleitung
+
+Paid Search und teilweise Social Ads schrittweise reduzieren und die frei werdenden Mittel testweise in Influencer, Referral, Email, SEO und Content investieren.
+Electronics als Umsatztreiber erhalten, jedoch seine Marge verbessern; Beauty als stärkste margenorientierte Wachstumschance separat skalieren.
+Southeast Asia bei der Expansion priorisieren und in Europe Kundenbindung sowie Wiederkäufe stärken.
+Ein VIP-Programm für die Top 5 % der Kunden einführen, die 35,1 % des Umsatzes generieren, und gleichzeitig das breitere mittlere Segment weiterentwickeln.
+Tiefe flächendeckende Rabatte durch Wiederkaufsmechaniken ersetzen und Checkout B nach Prüfung von Signifikanz und Conversion-Effekt gezielt für Neukunden einführen.
