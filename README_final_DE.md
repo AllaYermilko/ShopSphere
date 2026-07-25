@@ -56,7 +56,7 @@ Die Filter nach **Region** und **Jahr** ermöglichen eine gezielte Analyse der w
 
 * **Wachstum und Saisonalität:** Der höchste Monatsumsatz wurde im Dezember 2024 mit **759.390 USD** erreicht. Das vierte Quartal ist für Umsatz, Lagerbestand und Logistik besonders relevant.
 
-* **Marketingeffizienz:** Organic erzielt mit **8,02** den höchsten ROAS, während Paid Search trotz eines Budgets von rund **450.959 USD** nur einen ROAS von **1,33** und den niedrigsten beobachteten Kunden-LTV aufweist.
+* **Marketingeffizienz:** Organic erzielt mit **802%** den höchsten ROI, während Paid Search trotz eines Budgets von rund **450.959 USD** nur einen ROI von **133%** und den niedrigsten beobachteten Kunden-LTV aufweist.
 
 * **Produktkategorien:** Electronics generiert mit rund **2,10 Mio. USD** den höchsten Umsatz, erreicht jedoch nur **12 % Marge** und eine Retourenquote von **15,97 %**. Beauty besitzt mit **55 %** die höchste Marge und bietet attraktives Wachstumspotenzial.
 
@@ -66,4 +66,4 @@ Die Filter nach **Region** und **Jahr** ermöglichen eine gezielte Analyse der w
 
 * **A/B-Test:** Checkout B erhöht den durchschnittlichen Bestellwert insgesamt um etwa **2,0 %**. Der stärkste Effekt zeigt sich bei Neukunden mit **+19,2 %**, während der Unterschied bei Bestandskunden mit **+0,9 %** gering bleibt. Ein gezielter Rollout für Neukunden sollte deshalb vor einer vollständigen Einführung weiter geprüft werden.
 
-> **Zentrale Erkenntnis:** Nachhaltiges Wachstum entsteht nicht allein durch höheren Umsatz, sondern durch die gemeinsame Steuerung von Marge, Retouren, ROAS, Kunden-LTV und Kundenbindung.
+> **Zentrale Erkenntnis:** Nachhaltiges Wachstum entsteht nicht allein durch höheren Umsatz, sondern durch die gemeinsame Steuerung von Marge, Retouren, ROI, Kunden-LTV und Kundenbindung.
