@@ -33,7 +33,8 @@ Der Analyseprozess folgte der Struktur:
 ## Dashboard:
 
 **Link zu Tableau Public:**  
-[Tableau-Public-Dashboard hier einfügen]([_______________________________](https://public.tableau.com/views/final_project_17840384652670/Geschftsberblick?:language=en-US&publish=yes&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link))
+[Tableau-Public-Dashboard hier einfügen](https://public.tableau.com/views/final_project_17840384652670/Geschftsberblick?:language=en-US&publish=yes&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link)
+
 
 Die Tableau-Lösung besteht aus zwei thematisch getrennten Bereichen:
 
