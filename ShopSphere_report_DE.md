@@ -244,20 +244,19 @@ GROUP BY channel
 ORDER BY roi DESC;
 ```
 
-Im Projekt wird die Kennzahl als Verhältnis von zugerechnetem Umsatz zu Budget verwendet. Methodisch handelt es sich damit um ROAS, auch wenn die Aufgabenstellung den Begriff ROI verwendet.
 
 #### Marketingkanäle
 
-| Kanal | Budget, USD | Zugerechneter Umsatz, USD | ROAS | Conversions | Kosten je Conversion, USD |
+| Kanal | Budget, USD | Zugerechneter Umsatz, USD | ROI, % | Conversions | Kosten je Conversion, USD |
 | :--- | ---: | ---: | ---: | ---: | ---: |
-| Organic | 20 364 | 163 398 | 8,02 | 1 881 | 10,83 |
-| Email | 37 468 | 243 610 | 6,50 | 2 794 | 13,41 |
-| Influencer | 112 337 | 519 453 | 4,62 | 5 904 | 19,03 |
-| Referral | 73 766 | 263 536 | 3,57 | 2 958 | 24,94 |
-| Social Ads | 286 488 | 589 544 | 2,06 | 6 738 | 42,52 |
-| Paid Search | 450 959 | 598 703 | 1,33 | 6 829 | 66,04 |
+| Organic | 20 364 | 163 398 | 802 | 1 881 | 10,83 |
+| Email | 37 468 | 243 610 | 650 | 2 794 | 13,41 |
+| Influencer | 112 337 | 519 453 | 462 | 5 904 | 19,03 |
+| Referral | 73 766 | 263 536 | 357 | 2 958 | 24,94 |
+| Social Ads | 286 488 | 589 544 | 206 | 6 738 | 42,52 |
+| Paid Search | 450 959 | 598 703 | 133 | 6 829 | 66,04 |
 
-Organic und Email sind kurzfristig am effizientesten. Paid Search bindet das größte Budget, erzielt aber den niedrigsten ROAS und die höchsten Kosten je Conversion.
+Organic und Email sind kurzfristig am effizientesten. Paid Search bindet das größte Budget, erzielt aber den niedrigsten ROI und die höchsten Kosten je Conversion.
 
 ---
 
@@ -281,16 +280,16 @@ Betriebswirtschaftliche Schlussfolgerung: Das vierte Quartal und insbesondere de
 
 ![Marketing_Effizienz](Tableau/2.2.Marketing_Effizienz.png)
 
-Das Streudiagramm stellt das Marketingbudget dem ROAS gegenüber.
+Das Streudiagramm stellt das Marketingbudget dem ROI gegenüber.
 
-| Kanal | Budget, USD | Zugerechneter Umsatz, USD | ROAS | Conversions | Kosten je Conversion, USD |
+| Kanal | Budget, USD | Zugerechneter Umsatz, USD | ROI, % | Conversions | Kosten je Conversion, USD |
 | :--- | ---: | ---: | ---: | ---: | ---: |
-| Organic | 20 364 | 163 398 | 8,02 | 1 881 | 10,83 |
-| Email | 37 468 | 243 610 | 6,50 | 2 794 | 13,41 |
-| Influencer | 112 337 | 519 453 | 4,62 | 5 904 | 19,03 |
-| Referral | 73 766 | 263 536 | 3,57 | 2 958 | 24,94 |
-| Social Ads | 286 488 | 589 544 | 2,06 | 6 738 | 42,52 |
-| Paid Search | 450 959 | 598 703 | 1,33 | 6 829 | 66,04 |
+| Organic | 20 364 | 163 398 | 802 | 1 881 | 10,83 |
+| Email | 37 468 | 243 610 | 650 | 2 794 | 13,41 |
+| Influencer | 112 337 | 519 453 | 462 | 5 904 | 19,03 |
+| Referral | 73 766 | 263 536 | 357 | 2 958 | 24,94 |
+| Social Ads | 286 488 | 589 544 | 206 | 6 738 | 42,52 |
+| Paid Search | 450 959 | 598 703 | 133 | 6 829 | 66,04 |
 
 Die größten Budgets fließen nicht in die effizientesten Kanäle. Paid Search und Social Ads sind deshalb die wichtigsten Auditfelder. Ein Teil des Budgets sollte kontrolliert in Influencer, Referral, Email sowie SEO- und Content-Maßnahmen umgeschichtet werden. Eine sofortige vollständige Abschaltung wäre wegen Attributions- und Skalierungsrisiken nicht sachgerecht.
 
@@ -393,38 +392,38 @@ Die Geschichte folgt der Reihenfolge:
 | Nr. | Kernaussage | Bedeutung |
 | ---: | :--- | :--- |
 | 1 | 3,47 Mio. USD Umsatz; Monatsrekord 759 390 USD im Dezember 2024 | Starkes Wachstum mit hoher Saisonalitätsabhängigkeit |
-| 2 | Paid Search: größtes Budget, niedrigster ROAS und niedrigster LTV | Budgetallokation muss geprüft werden |
+| 2 | Paid Search: größtes Budget, niedrigster ROI und niedrigster LTV | Budgetallokation muss geprüft werden |
 | 3 | Top 5 %: 35,07 % Umsatz; Southeast Asia wächst am schnellsten; Beauty hat 55 % Marge | Retention, Expansion und margenstarke Kategorien verbinden |
 
 ---
 
 ## Block 4. Strategische Business Cases
 
-### 4.3. Welcher Kanal erzielt den höchsten beziehungsweise niedrigsten ROAS?
+### 4.3. Welcher Kanal erzielt den höchsten beziehungsweise niedrigsten ROI?
 
-| Kanal | Budget, USD | Zugerechneter Umsatz, USD | ROAS | Conversions | Kosten je Conversion, USD |
+| Kanal | Budget, USD | Zugerechneter Umsatz, USD | ROI, % | Conversions | Kosten je Conversion, USD |
 | :--- | ---: | ---: | ---: | ---: | ---: |
-| Organic | 20 364 | 163 398 | 8,02 | 1 881 | 10,83 |
-| Email | 37 468 | 243 610 | 6,50 | 2 794 | 13,41 |
-| Influencer | 112 337 | 519 453 | 4,62 | 5 904 | 19,03 |
-| Referral | 73 766 | 263 536 | 3,57 | 2 958 | 24,94 |
-| Social Ads | 286 488 | 589 544 | 2,06 | 6 738 | 42,52 |
-| Paid Search | 450 959 | 598 703 | 1,33 | 6 829 | 66,04 |
+| Organic | 20 364 | 163 398 | 802 | 1 881 | 10,83 |
+| Email | 37 468 | 243 610 | 650 | 2 794 | 13,41 |
+| Influencer | 112 337 | 519 453 | 462 | 5 904 | 19,03 |
+| Referral | 73 766 | 263 536 | 357 | 2 958 | 24,94 |
+| Social Ads | 286 488 | 589 544 | 206 | 6 738 | 42,52 |
+| Paid Search | 450 959 | 598 703 | 133 | 6 829 | 66,04 |
 
-Organic erzielt den höchsten ROAS, Paid Search den niedrigsten. Gleichzeitig erhält Paid Search den größten Budgetanteil. Die Ausgabenstruktur ist unausgewogen, darf aber nur über kontrollierte Tests verändert werden.
+Organic erzielt den höchsten ROI, Paid Search den niedrigsten. Gleichzeitig erhält Paid Search den größten Budgetanteil. Die Ausgabenstruktur ist unausgewogen, darf aber nur über kontrollierte Tests verändert werden.
 
-### 4.4. Stimmen ROAS und langfristiger Kundenwert überein?
+### 4.4. Stimmen ROI und langfristiger Kundenwert überein?
 
 ![Langfristiger Kundenwert nach Akquisitionskanal](Tableau/4.4.LTV_nach_Akquisekanal.png)
 
-| Kanal | Ø beobachteter LTV, USD | ROAS |
+| Kanal | Ø beobachteter LTV, USD | ROI, % |
 | :--- | ---: | ---: |
-| Influencer | 1 985,73 | 4,62 |
-| Referral | 1 791,82 | 3,57 |
-| Organic | 1 316,13 | 8,02 |
-| Email | 1 074,46 | 6,50 |
-| Social Ads | 822,09 | 2,06 |
-| Paid Search | 648,10 | 1,33 |
+| Influencer | 1 985,73 | 462 |
+| Referral | 1 791,82 | 357 |
+| Organic | 1 316,13 | 802 |
+| Email | 1 074,46 | 650 |
+| Social Ads | 822,09 | 206 |
+| Paid Search | 648,10 | 133 |
 
 Die Ergebnisse stimmen nur teilweise überein. Organic und Email führen bei der kurzfristigen Effizienz, Influencer und Referral beim langfristigen Kundenwert. Paid Search ist in beiden Perspektiven der schwächste Kanal.
 
@@ -536,7 +535,7 @@ Eine faire Darstellung muss außerdem Stichprobengrößen, Konfidenzintervalle, 
 | Priorität | Maßnahme | Erwarteter Effekt |
 | ---: | :--- | :--- |
 | 1 | Paid Search und ineffiziente Social-Ads-Kampagnen schrittweise reduzieren | Geringere Budgetbindung in schwachen Kanälen |
-| 2 | Mittel kontrolliert in Influencer, Referral, Email, SEO und Content verlagern | Bessere Kombination aus ROAS und LTV |
+| 2 | Mittel kontrolliert in Influencer, Referral, Email, SEO und Content verlagern | Bessere Kombination aus ROI und LTV |
 | 3 | Electronics wirtschaftlich optimieren | Höhere Marge bei Erhalt des Umsatzvolumens |
 | 4 | Beauty ohne tiefe Massenrabatte skalieren | Profitables Kategorienwachstum |
 | 5 | Southeast Asia priorisieren; Europe stärker auf Retention ausrichten | Nutzung von Wachstum und Stabilisierung reiferer Märkte |
@@ -544,4 +543,4 @@ Eine faire Darstellung muss außerdem Stichprobengrößen, Konfidenzintervalle, 
 | 7 | Tiefe Rabatte durch Wiederkaufsmechaniken ersetzen | Höhere Bestellfrequenz und höherer LTV |
 | 8 | Checkout B gezielt für Neukunden testen oder ausrollen | Nutzung des AOV-Potenzials bei kontrolliertem Risiko |
 
-> Nachhaltiges Wachstum entsteht nicht durch die isolierte Maximierung des Umsatzes, sondern durch die gemeinsame Steuerung von Umsatz, Marge, Retouren, ROAS, LTV und Kundenbindung.
+> Nachhaltiges Wachstum entsteht nicht durch die isolierte Maximierung des Umsatzes, sondern durch die gemeinsame Steuerung von Umsatz, Marge, Retouren, ROI, LTV und Kundenbindung.
