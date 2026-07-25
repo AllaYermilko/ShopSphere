@@ -376,7 +376,7 @@ Die Filter `Region` und `Jahr` gelten für kompatible Arbeitsblätter der primä
 
 | Visualisierung | Kennzahlen | Entscheidungszweck |
 | :--- | :--- | :--- |
-| Marketingbudget — ROAS | Budget, ROAS | Kurzfristige Ausgabeneffizienz |
+| Marketingbudget — ROI | Budget, ROI | Kurzfristige Ausgabeneffizienz |
 | LTV nach Kanal | Beobachteter Kunden-LTV | Langfristige Kundenqualität |
 | Umsatz — Marge | Kategorieumsatz, Marge, Retouren | Profitables Produktwachstum |
 | Strategischer Textblock | Prioritäten und Risiken | Konkrete Managemententscheidung |
@@ -461,7 +461,7 @@ Beauty ist der überzeugendste „Hidden Diamond“.
 
 ### 4.8. Binden sich stark rabattorientierte Kunden langfristig?
 
-![Vergleich rabattorientierter Kunden](Tableau/4.8.Rabattorientierte_Kunden.png)
+![Vergleich rabattorientierter Kunden](Tableau/4.8.Kundenbindung&Rabatte.png)
 
 | Segment | Ø Bestellungen | Ø LTV, USD | Einmalkäuferanteil |
 | :--- | ---: | ---: | ---: |
