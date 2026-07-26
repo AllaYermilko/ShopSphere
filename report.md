@@ -346,7 +346,9 @@ Das Ergebnis zeigt eine relevante Konzentration, bestätigt jedoch nicht die kla
 | Mobile | 5 % | 11 % | +6 Prozentpunkte |
 | Tablet | 6 % | 10 % | +4 Prozentpunkte |
 
-Die Retourenquote ist bei kostenlosem Versand auf allen Geräten höher. Der entscheidende Faktor ist hier nicht das Endgerät, sondern die Versandbedingung. Der beobachtete Zusammenhang beweist jedoch keine Kausalität, da sich Bestellwert, Warenkorbgröße und Kategorienmix unterscheiden können.
+Der Liefertyp hat einen stabilen, wenn auch moderaten Einfluss auf die Retourenquote, unabhängig vom verwendeten Gerät. Bei kostenlosem Versand steigt die Retourenquote um +4 Prozentpunkte bei Desktop und Tablet sowie um +6 Prozentpunkte bei mobilen Endgeräten.
+Auch wenn der Unterschied nicht extrem groß ist, reduziert der kostenlose Versand das finanzielle Risiko für die Käufer und verleitet sie dazu, zusätzliche Artikel zur Anprobe oder zum Vergleich zu bestellen.
+Zur Optimierung der Logistikkosten sollte das Unternehmen den Mindestbestellwert für den kostenlosen Versand anheben. Dies trägt dazu bei, den durchschnittlichen Bestellwert (AOV) zu steigern und die Kosten für die Retourenabwicklung auszugleichen.
 
 ---
 
